@@ -10,8 +10,8 @@
 
 <div id="screen-home" class="screen" style="display:none">
 <div class="grid">
-<button onclick="showScreen('screen-citizens')">Ciudadanos</button>
-<button onclick="showScreen('screen-vehicles')">Vehículos</button>
+<button onclick="openCitizens()">Ciudadanos</button>
+<button onclick="openVehicles()">Vehículos</button>
 <button onclick="showScreen('screen-cases')">Sistema policial</button>
 <button onclick="showScreen('screen-create')">Crear ciudadano</button>
 </div>
@@ -26,7 +26,7 @@
 <div id="screen-profile" class="screen" style="display:none">
 <button onclick="showScreen('screen-citizens')">⬅ Volver</button>
 <div id="profile"></div>
-<input type="file" accept="image/*" capture="environment" onchange="uploadPhoto(event)">
+<input type="file" accept="image/*" capture="environment" onchange="uploadCitizenPhoto(event)">
 </div>
 
 <div id="screen-vehicles" class="screen" style="display:none">
@@ -52,9 +52,12 @@
 
 <div id="screen-cases" class="screen" style="display:none">
 <button onclick="showScreen('screen-home')">⬅ Volver</button>
-<input id="casenote" placeholder="Notas del caso">
+<input id="caseTitle" placeholder="Título del caso">
+<textarea id="caseDesc" placeholder="Descripción"></textarea>
 <button onclick="createCase()">Crear caso</button>
 <div id="caseList"></div>
+<div id="caseProfile"></div>
+<input type="file" accept="image/*" capture="environment" onchange="uploadCasePhoto(event)">
 </div>
 
 <script src="app.js"></script></body></html>
