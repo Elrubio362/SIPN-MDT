@@ -5,7 +5,14 @@ let cases=JSON.parse(localStorage.getItem('cases')||"[]");
 let current=null;
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.style.display='none');document.getElementById(id).style.display='block';}
-function doLogin(){if(user.value===USER&&pass.value===PASS)showScreen('screen-home');else loginError.innerText='Credenciales incorrectas'}
+
+function doLogin(){
+  const u=document.getElementById("user").value;
+  const p=document.getElementById("pass").value;
+  const err=document.getElementById("loginError");
+  if(u===USER && p===PASS){err.innerText="";showScreen('screen-home');}
+  else{err.innerText="Credenciales incorrectas";}
+}
 
 const names=["Alberto","Carlos","Juan","Luis","Sergio"];const surnames=["Garcia","Martinez","Lopez"];const cars=["Seat Ibiza","VW Golf","BMW Serie 3","Audi A3","Toyota Corolla"];
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
