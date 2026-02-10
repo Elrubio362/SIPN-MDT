@@ -4,7 +4,7 @@
 <body>
 <div id="login"><h1>SIPN</h1>
 <input id="user" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña">
-<button onclick="login()">Entrar</button><p id="loginError"></p></div>
+<button onclick="doLogin()">Entrar</button><p id="loginError"></p></div>
 
 <div id="dashboard" style="display:none">
 <div class="grid">
@@ -20,7 +20,7 @@
 <div id="citizenList"></div></div>
 
 <div id="createPage" style="display:none">
-<button onclick="back()">⬅ Volver</button><h2>Crear ciudadano</h2>
+<button onclick="backToCitizens()">⬅ Volver</button><h2>Crear ciudadano</h2>
 <input id="cname" placeholder="Nombre"><input id="cdni" placeholder="DNI">
 <input id="cjob" placeholder="Trabajo"><input id="ccrime" placeholder="Antecedentes">
 <input id="cvehicle" placeholder="Vehículo"><input id="cplate" placeholder="Matrícula">
