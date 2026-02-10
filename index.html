@@ -13,6 +13,9 @@
 <button onclick="openVehicles()">Vehículos</button>
 <button onclick="openCases()">Sistema policial</button>
 <button onclick="showScreen('screen-create')">Crear ciudadano</button>
+<button onclick="exportDB()">☁️ Guardar nube</button>
+<button onclick="document.getElementById('importFile').click()">☁️ Cargar nube</button>
+<input id="importFile" type="file" accept=".json" style="display:none" onchange="importDB(event)">
 </div></div>
 
 <div id="screen-citizens" class="screen" style="display:none">
@@ -28,13 +31,11 @@
 
 <div id="screen-vehicles" class="screen" style="display:none">
 <button onclick="showScreen('screen-home')">⬅ Volver</button>
-<input id="vsearch" placeholder="Buscar matrícula..." oninput="searchVehicle()">
 <div id="vehicleList"></div></div>
 
 <div id="screen-vehicleProfile" class="screen" style="display:none">
 <button onclick="openVehicles()">⬅ Volver</button>
-<div id="vehicleProfile"></div>
-</div>
+<div id="vehicleProfile"></div></div>
 
 <div id="screen-cases" class="screen" style="display:none">
 <button onclick="showScreen('screen-home')">⬅ Volver</button>
