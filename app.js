@@ -1,8 +1,6 @@
-let citizens=[];let vehicles=[];
-for(let i=0;i<200;i++){citizens.push({name:"Ciudadano "+i,phone:"600000"+i,car:"Coche "+i});vehicles.push({model:"Coche "+i,owner:i});}
-function login(){if(user.value==="Pol Beltran"&&pass.value==="Polbeltran5."){loginPage.style.display="none";hub.style.display="grid";}else alert("Credenciales incorrectas");}
-function openCitizens(){hub.style.display="none";citizensPage.style.display="block";citizensPage.innerHTML="<button onclick='backHub()'>← Volver</button><h2>Ciudadanos</h2>";citizens.forEach((c,i)=>citizensPage.innerHTML+=`<div class="listItem">${c.name}<button onclick="showCitizen(${i})">Ver</button></div>`);}
-function openVehicles(){hub.style.display="none";vehiclesPage.style.display="block";vehiclesPage.innerHTML="<button onclick='backHub()'>← Volver</button><h2>Vehículos</h2>";vehicles.forEach((v,i)=>vehiclesPage.innerHTML+=`<div class="listItem">${v.model}<button onclick="showVehicle(${i})">Ver</button></div>`);}
-function showCitizen(i){citizensPage.style.display="none";detailPage.style.display="block";let c=citizens[i];detailPage.innerHTML=`<button onclick='openCitizens()'>← Volver</button><h2>${c.name}</h2>Tel: ${c.phone}<br>Vehículo: <span class='link' onclick='showVehicle(${i})'>${c.car}</span>`;}
-function showVehicle(i){vehiclesPage.style.display="none";detailPage.style.display="block";let v=vehicles[i];detailPage.innerHTML=`<button onclick='openVehicles()'>← Volver</button><h2>${v.model}</h2>Propietario: <span class='link' onclick='showCitizen(${v.owner})'>Ciudadano ${v.owner}</span>`;}
-function backHub(){citizensPage.style.display="none";vehiclesPage.style.display="none";detailPage.style.display="none";hub.style.display="grid";}
+function login(){
+ if(user.value==="Pol Beltran" && pass.value==="Polbeltran5."){
+   loginPage.style.display="none";
+   hub.style.display="grid";
+ } else alert("Credenciales incorrectas");
+}

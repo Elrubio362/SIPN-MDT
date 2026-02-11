@@ -3,7 +3,4 @@ body{margin:0;font-family:Arial;background:#0d2a4a;color:white}
 .logo{width:120px}
 .hidden{display:none}
 .hubGrid{display:grid;grid-template-columns:1fr 1fr;height:100vh}
-.hubBtn{background:white;color:#0d2a4a;font-size:28px;display:flex;align-items:center;justify-content:center;border:2px solid #0d2a4a}
-.page{padding:20px}
-.listItem{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #444}
-.link{color:#4aa3ff;cursor:pointer}
+.hubBtn{background:white;color:#0d2a4a;font-size:28px;display:flex;align-items:center;justify-content:center;border:2px solid #0d2a4a;cursor:pointer}
