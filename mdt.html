@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="hub">
+<h2 class="title">MDT</h2>
+<div class="grid">
+<div class="tile" onclick="openCitizens()">Ciudadanos</div>
+<div class="tile" onclick="openVehicles()">Vehículos</div>
+<div class="tile">Sistema policial</div>
+<div class="tile">Crear ciudadano</div>
+</div></div>
+
+<div id="citizens" class="hidden page">
+<button onclick="back()">← Volver</button>
+<input placeholder="Buscar" oninput="renderCitizens(this.value)">
+<ul id="citList"></ul>
+</div>
+
+<div id="vehicles" class="hidden page">
+<button onclick="back()">← Volver</button>
+<input placeholder="Buscar" oninput="renderVehicles(this.value)">
+<ul id="vehList"></ul>
+</div>
+
+<script src="app.js"></script>
+</body></html>
