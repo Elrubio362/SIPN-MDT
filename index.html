@@ -7,54 +7,49 @@
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- LOGIN (do not change ids or function names) -->
-  <div id="screen-login" class="screen login">
-    <img src="logo.png" class="loginLogo" alt="logo">
-    <h1 class="loginTitle">SIPN</h1>
-    <input id="user" placeholder="Usuario" autocomplete="username" />
-    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password" />
-    <button onclick="doLogin()">Entrar</button>
-    <p id="loginError" class="msg"></p>
-  </div>
 
-  <!-- HOME / HUB -->
-  <div id="screen-home" class="screen hidden">
-    <h2 class="title">MDT</h2>
-    <div id="hubGrid" class="grid">
-      <button class="tile" id="tileCit" onclick="openCitizens()">Ciudadanos</button>
-      <button class="tile" id="tileVeh" onclick="openVehicles()">Vehículos</button>
-      <button class="tile" id="tilePol" onclick="openPolice()">Sistema policial</button>
-      <button class="tile" id="tileCreate" onclick="openCreate()">Crear ciudadano</button>
-    </div>
-  </div>
+<div id="screen-login" class="screen login">
+  <img src="logo.png" class="loginLogo">
+  <h1 class="loginTitle">SIPN</h1>
+  <input id="user" placeholder="Usuario">
+  <input id="pass" type="password" placeholder="Contraseña">
+  <button id="loginBtn">Entrar</button>
+  <p id="loginError"></p>
+</div>
 
-  <!-- CITIZENS PAGE -->
-  <div id="screen-citizens" class="screen hidden">
-    <button class="back" onclick="showHome()">← Volver</button>
-    <h2>Ciudadanos</h2>
-    <input id="searchCitizen" placeholder="Buscar por nombre..." oninput="renderCitizens()" />
-    <div id="citizenList" class="list"></div>
+<div id="screen-home" class="screen hidden">
+  <h2 class="title">MDT</h2>
+  <div class="grid">
+    <button class="tile" onclick="openCitizens()">Ciudadanos</button>
+    <button class="tile" onclick="openVehicles()">Vehículos</button>
+    <button class="tile">Sistema policial</button>
+    <button class="tile">Crear ciudadano</button>
   </div>
+</div>
 
-  <!-- CITIZEN PROFILE -->
-  <div id="screen-citizen-detail" class="screen hidden">
-    <button class="back" onclick="openCitizens()">← Volver</button>
-    <div id="citizenDetail" class="detail"></div>
-  </div>
+<div id="screen-citizens" class="screen hidden">
+<button class="back" onclick="showHome()">← Volver</button>
+<h2>Ciudadanos</h2>
+<input id="searchCitizen" placeholder="Buscar..." oninput="renderCitizens()">
+<div id="citizenList" class="list"></div>
+</div>
 
-  <!-- VEHICLES PAGE -->
-  <div id="screen-vehicles" class="screen hidden">
-    <button class="back" onclick="showHome()">← Volver</button>
-    <h2>Vehículos</h2>
-    <input id="searchVehicle" placeholder="Buscar por matrícula o modelo..." oninput="renderVehicles()" />
-    <div id="vehicleList" class="list"></div>
-  </div>
+<div id="screen-citizen-detail" class="screen hidden">
+<button class="back" onclick="openCitizens()">← Volver</button>
+<div id="citizenDetail"></div>
+</div>
 
-  <!-- VEHICLE PROFILE -->
-  <div id="screen-vehicle-detail" class="screen hidden">
-    <button class="back" onclick="openVehicles()">← Volver</button>
-    <div id="vehicleDetail" class="detail"></div>
-  </div>
+<div id="screen-vehicles" class="screen hidden">
+<button class="back" onclick="showHome()">← Volver</button>
+<h2>Vehículos</h2>
+<input id="searchVehicle" placeholder="Buscar..." oninput="renderVehicles()">
+<div id="vehicleList" class="list"></div>
+</div>
+
+<div id="screen-vehicle-detail" class="screen hidden">
+<button class="back" onclick="openVehicles()">← Volver</button>
+<div id="vehicleDetail"></div>
+</div>
 
 <script src="app.js"></script>
 </body>
