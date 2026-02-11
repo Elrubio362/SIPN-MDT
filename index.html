@@ -1,68 +1,61 @@
-<!doctype html><html lang="es"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SIPN MDT</title><link rel="stylesheet" href="styles.css"></head><body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SIPN MDT</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- LOGIN (do not change ids or function names) -->
+  <div id="screen-login" class="screen login">
+    <img src="logo.png" class="loginLogo" alt="logo">
+    <h1 class="loginTitle">SIPN</h1>
+    <input id="user" placeholder="Usuario" autocomplete="username" />
+    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password" />
+    <button onclick="doLogin()">Entrar</button>
+    <p id="loginError" class="msg"></p>
+  </div>
 
+  <!-- HOME / HUB -->
+  <div id="screen-home" class="screen hidden">
+    <h2 class="title">MDT</h2>
+    <div id="hubGrid" class="grid">
+      <button class="tile" id="tileCit" onclick="openCitizens()">Ciudadanos</button>
+      <button class="tile" id="tileVeh" onclick="openVehicles()">Vehículos</button>
+      <button class="tile" id="tilePol" onclick="openPolice()">Sistema policial</button>
+      <button class="tile" id="tileCreate" onclick="openCreate()">Crear ciudadano</button>
+    </div>
+  </div>
 
-<div id="screen-login" class="screen login">
-  <img src="logo.png" class="loginLogo">
-  <h1 class="loginTitle">SIPN</h1>
-  <input id="user" placeholder="Usuario">
-  <input id="pass" type="password" placeholder="Contraseña">
-  <button onclick="doLogin2()">Entrar</button>
-  <p id="loginError"></p>
-</div>
+  <!-- CITIZENS PAGE -->
+  <div id="screen-citizens" class="screen hidden">
+    <button class="back" onclick="showHome()">← Volver</button>
+    <h2>Ciudadanos</h2>
+    <input id="searchCitizen" placeholder="Buscar por nombre..." oninput="renderCitizens()" />
+    <div id="citizenList" class="list"></div>
+  </div>
 
+  <!-- CITIZEN PROFILE -->
+  <div id="screen-citizen-detail" class="screen hidden">
+    <button class="back" onclick="openCitizens()">← Volver</button>
+    <div id="citizenDetail" class="detail"></div>
+  </div>
 
-<div id="screen-home" class="screen" style="display:none">
-<div class="grid">
-<button onclick="openCitizens()">Ciudadanos</button>
-<button onclick="openVehicles()">Vehículos</button>
-<button onclick="showScreen('screen-cases')">Sistema policial</button>
-<button onclick="showScreen('screen-create')">Crear ciudadano</button>
-</div>
-</div>
+  <!-- VEHICLES PAGE -->
+  <div id="screen-vehicles" class="screen hidden">
+    <button class="back" onclick="showHome()">← Volver</button>
+    <h2>Vehículos</h2>
+    <input id="searchVehicle" placeholder="Buscar por matrícula o modelo..." oninput="renderVehicles()" />
+    <div id="vehicleList" class="list"></div>
+  </div>
 
-<div id="screen-citizens" class="screen" style="display:none">
-<button onclick="showScreen('screen-home')">⬅ Volver</button>
-<input id="search" placeholder="Buscar..." oninput="searchCitizen()">
-<div id="citizenList"></div>
-</div>
+  <!-- VEHICLE PROFILE -->
+  <div id="screen-vehicle-detail" class="screen hidden">
+    <button class="back" onclick="openVehicles()">← Volver</button>
+    <div id="vehicleDetail" class="detail"></div>
+  </div>
 
-<div id="screen-profile" class="screen" style="display:none">
-<button onclick="showScreen('screen-citizens')">⬅ Volver</button>
-<div id="profile"></div>
-<input type="file" accept="image/*" capture="environment" onchange="uploadCitizenPhoto(event)">
-</div>
-
-<div id="screen-vehicles" class="screen" style="display:none">
-<button onclick="showScreen('screen-home')">⬅ Volver</button>
-<input id="vsearch" placeholder="Buscar matrícula..." oninput="searchVehicle()">
-<div id="vehicleList"></div>
-<div id="vehicleProfile"></div>
-</div>
-
-<div id="screen-create" class="screen" style="display:none">
-<button onclick="showScreen('screen-home')">⬅ Volver</button>
-<h3>Crear ciudadano</h3>
-<input id="cname" placeholder="Nombre completo">
-<input id="cdni" placeholder="DNI">
-<input id="caddr" placeholder="Dirección">
-<input id="cphone" placeholder="Teléfono">
-<input id="cjob" placeholder="Trabajo">
-<input id="ccrime" placeholder="Antecedentes">
-<input id="cvehicle" placeholder="Vehículo">
-<input id="cplate" placeholder="Matrícula">
-<button onclick="saveManual()">Guardar</button>
-</div>
-
-<div id="screen-cases" class="screen" style="display:none">
-<button onclick="showScreen('screen-home')">⬅ Volver</button>
-<input id="caseTitle" placeholder="Título del caso">
-<textarea id="caseDesc" placeholder="Descripción"></textarea>
-<button onclick="createCase()">Crear caso</button>
-<div id="caseList"></div>
-<div id="caseProfile"></div>
-<input type="file" accept="image/*" capture="environment" onchange="uploadCasePhoto(event)">
-</div>
-
-<script src="app.js"></script></body></html>
+<script src="app.js"></script>
+</body>
+</html>
