@@ -17,11 +17,20 @@
 </div>
 
 <div id="hub" class="hidden hubGrid">
-  <div class="hubBtn" onclick="alert('Ciudadanos')">Ciudadanos</div>
-  <div class="hubBtn" onclick="alert('Vehículos')">Vehículos</div>
-  <div class="hubBtn" onclick="alert('Sistema policial')">Sistema policial</div>
-  <div class="hubBtn" onclick="alert('Crear ciudadanos')">Crear ciudadanos</div>
+  <div class="hubBtn" onclick="openCitizens()">Ciudadanos</div>
+  <div class="hubBtn">Vehículos</div>
+  <div class="hubBtn">Sistema policial</div>
+  <div class="hubBtn">Crear ciudadanos</div>
 </div>
+
+<div id="citizensPage" class="hidden page">
+  <button onclick="backHub()">← Volver</button>
+  <h2>Ciudadanos</h2>
+  <input id="search" placeholder="Buscar ciudadano..." oninput="renderCitizens()">
+  <div id="citizensList"></div>
+</div>
+
+<div id="citizenDetail" class="hidden page"></div>
 
 <script src="app.js"></script>
 </body>
