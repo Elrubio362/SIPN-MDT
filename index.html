@@ -1,7 +1,16 @@
 <!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="styles.css"></head>
 <body>
 <div id="loginPage" class="center"><h1>SIPN</h1><input id="user" placeholder="Usuario"><input id="pass" type="password" placeholder="Contraseña"><button onclick="login()">Entrar</button></div>
-<div id="hub" class="hidden hubGrid"><div class="hubBtn" onclick="openCitizens()">Ciudadanos</div><div class="hubBtn">Vehículos</div><div class="hubBtn">Sistema policial</div><div class="hubBtn">Crear ciudadanos</div></div>
+<div id="hub" class="hidden hubGrid">
+<div class="hubBtn" onclick="openCitizens()">Ciudadanos</div>
+<div class="hubBtn" onclick="openVehicles()">Vehículos</div>
+<div class="hubBtn">Sistema policial</div>
+<div class="hubBtn">Crear ciudadanos</div></div>
+
 <div id="citizensPage" class="hidden page"><button onclick="backHub()">← Volver</button><h2>Ciudadanos</h2><input id="search" placeholder="Buscar..." oninput="renderCitizens()"><div id="citizensList"></div></div>
 <div id="citizenDetail" class="hidden page"></div>
+
+<div id="vehiclesPage" class="hidden page"><button onclick="backHub()">← Volver</button><h2>Vehículos</h2><div id="vehiclesList"></div></div>
+<div id="vehicleDetail" class="hidden page"></div>
+
 <script src="app.js"></script></body></html>
