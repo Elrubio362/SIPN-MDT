@@ -1,41 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIPN MDT v46</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="screen center">
-  <h1>SIPN</h1>
-  <input id="user" placeholder="Usuario"><br>
-  <input id="pass" type="password" placeholder="Contraseña"><br>
-  <button onclick="login()">Entrar</button>
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="centered">
+  <img src="logo.png" class="logo" alt="logo">
+  <h1 class="title">SIPN</h1>
+  <input id="user" placeholder="Usuario" autocomplete="username">
+  <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
+  <button id="enterBtn" onclick="login()">Entrar</button>
+  <p id="loginMsg" class="msg"></p>
 </div>
 
-<!-- HUB -->
-<div id="hub" class="screen hidden grid">
-  <div class="tile" onclick="openScreen('citizens')">Ciudadanos</div>
-  <div class="tile" onclick="openScreen('vehicles')">Vehículos</div>
-  <div class="tile">Sistema policial</div>
-  <div class="tile">Crear ciudadano</div>
-</div>
+<!-- MDT HUB -->
+<div id="mdtPage" style="display:none">
+  <div id="hub" class="gridHub" role="navigation" aria-label="Hub MDT">
+    <div class="hubCard" onclick="openCitizens()" id="cardCitizens">Ciudadanos</div>
+    <div class="hubCard" onclick="openVehicles()" id="cardVehicles">Vehículos</div>
+    <div class="hubCard" id="cardPolice">Sistema policial</div>
+    <div class="hubCard" id="cardCreate">Crear ciudadano</div>
+  </div>
 
-<!-- CIUDADANOS -->
-<div id="citizens" class="screen hidden">
-  <button onclick="goHub()">← Volver</button>
-  <h2>Ciudadanos</h2>
-  <input id="searchCitizen" placeholder="Buscar...">
-  <div id="citizenList"></div>
-</div>
-
-<!-- VEHICULOS -->
-<div id="vehicles" class="screen hidden">
-  <button onclick="goHub()">← Volver</button>
-  <h2>Vehículos</h2>
-  <input id="searchVehicle" placeholder="Buscar...">
-  <div id="vehicleList"></div>
+  <main id="content" class="contentArea"></main>
 </div>
 
 <script src="app.js"></script>
