@@ -1,1 +1,11 @@
-function login(){let u=user.value;let p=pass.value;if(u==='admin'&&p==='admin'){loginScreen.classList.add('hidden');hub.classList.remove('hidden')}else{alert('Credenciales incorrectas')}}function show(){alert('Módulo en desarrollo V25')}
+
+function login(){
+ let u=document.getElementById('user').value;
+ let p=document.getElementById('pass').value;
+ if(u==="Pol Beltran" && p==="Polbeltran5."){
+   document.getElementById('login').classList.add('hidden');
+   document.getElementById('hub').classList.remove('hidden');
+ } else {
+   document.getElementById('msg').innerText="Credenciales incorrectas";
+ }
+}
