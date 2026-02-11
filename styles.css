@@ -1,1 +1,6 @@
-body{background:#0b1d3a;color:white}
+
+body{font-family:sans-serif;background:#0c2a4d;color:white;text-align:center}
+.hidden{display:none}
+.logo{width:140px;margin-top:40px}
+.grid{display:grid;grid-template-columns:1fr 1fr;height:100vh}
+.card{background:#4e78d1;margin:20px;padding:40px;border-radius:20px;font-size:28px;cursor:pointer}

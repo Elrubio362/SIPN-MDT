@@ -1,1 +1,40 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>SIPN V30</title></head><body><h1>SIPN V30</h1></body></html>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SIPN MDT</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="login">
+  <img src="logo.png" class="logo">
+  <h1>SIPN</h1>
+  <input id="user" placeholder="Usuario">
+  <input id="pass" type="password" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
+</div>
+
+<div id="hub" class="hidden">
+  <div class="grid">
+    <div class="card" onclick="show('citizens')">Ciudadanos</div>
+    <div class="card" onclick="show('vehicles')">Vehículos</div>
+    <div class="card" onclick="show('police')">Sistema policial</div>
+    <div class="card" onclick="show('createCitizen')">Crear ciudadano</div>
+  </div>
+</div>
+
+<div id="citizens" class="hidden"><h2>Ciudadanos</h2><ul id="citizenList"></ul></div>
+<div id="vehicles" class="hidden"><h2>Vehículos</h2><p>Listado demo</p></div>
+<div id="police" class="hidden"><h2>Sistema policial</h2><p>Casos y comisaría (demo)</p></div>
+
+<div id="createCitizen" class="hidden">
+<h2>Crear ciudadano</h2>
+<input id="newName" placeholder="Nombre completo">
+<button onclick="addCitizen()">Guardar</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
