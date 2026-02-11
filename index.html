@@ -3,30 +3,38 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIPN</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
 <div id="loginScreen" class="center">
   <img src="logo.png" class="logo">
   <h1>SIPN</h1>
   <input id="user" placeholder="Usuario">
-  <input id="pass" type="password" placeholder="Contraseña">
+  <input id="pass" placeholder="Contraseña" type="password">
   <button onclick="login()">Entrar</button>
+  <p id="msg"></p>
 </div>
 
-<div id="mdtScreen" style="display:none;">
-  <h1 class="title">MDT</h1>
+<div id="hub" class="hidden">
+  <h2 class="title">MDT</h2>
   <div class="grid">
-    <div class="box" onclick="openModule('citizens')">Ciudadanos</div>
-    <div class="box" onclick="openModule('vehicles')">Vehículos</div>
-    <div class="box">Sistema policial</div>
-    <div class="box">Crear ciudadano</div>
+    <div class="tile" onclick="showPage('citizens')">Ciudadanos</div>
+    <div class="tile" onclick="showPage('vehicles')">Vehículos</div>
+    <div class="tile">Sistema policial</div>
+    <div class="tile">Crear ciudadano</div>
   </div>
+</div>
 
-  <div id="citizens" class="module">Módulo ciudadanos (igual que versión anterior)</div>
-  <div id="vehicles" class="module">Módulo vehículos (igual que versión anterior)</div>
+<div id="citizens" class="hidden page">
+  <button onclick="back()">← Volver</button>
+  <h2>Ciudadanos (demo)</h2>
+</div>
+
+<div id="vehicles" class="hidden page">
+  <button onclick="back()">← Volver</button>
+  <h2>Vehículos (demo)</h2>
 </div>
 
 <script src="app.js"></script>
