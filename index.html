@@ -58,5 +58,24 @@
 </div>
 
 <script src="app.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  const login=document.getElementById("loginScreen");
+  const hub=document.getElementById("hubScreen");
+  if(hub) hub.style.display="none";
+  const btn=document.getElementById("loginBtn");
+  if(btn){
+    btn.onclick=(e)=>{
+      e.preventDefault();
+      if(login && hub){
+        login.style.display="none";
+        hub.style.display="block";
+      }
+    }
+  }
+});
+</script>
+
 </body>
 </html>
