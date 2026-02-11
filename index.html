@@ -1,20 +1,36 @@
+
 <!DOCTYPE html>
-<html><head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIPN</title>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body class="center">
-<img src="logo.png" class="logo">
-<h1>SIPN</h1>
-<input id="u" placeholder="Usuario">
-<input id="p" placeholder="Contraseña" type="password">
-<button onclick="login()">Entrar</button>
-<p id="msg"></p>
-<script>
-function login(){
- if(u.value==='Pol Beltran' && p.value==='Polbeltran5.'){
-   window.location='mdt.html';
- } else msg.innerText='Credenciales incorrectas';
-}
-</script>
-</body></html>
+<body>
+
+<div id="loginPage" class="center">
+  <img src="logo.png" class="logo">
+  <h1>SIPN</h1>
+  <input id="user" placeholder="Usuario">
+  <input id="pass" type="password" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
+</div>
+
+<div id="hub" class="hidden">
+  <h1 class="title">MDT</h1>
+  <div class="grid">
+    <div class="card" onclick="openCitizens()">Ciudadanos</div>
+    <div class="card" onclick="openVehicles()">Vehículos</div>
+    <div class="card">Sistema policial</div>
+    <div class="card">Crear ciudadano</div>
+  </div>
+</div>
+
+<div id="citizensPage" class="hidden page"></div>
+<div id="vehiclesPage" class="hidden page"></div>
+<div id="detailPage" class="hidden page"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

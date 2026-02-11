@@ -1,41 +1,60 @@
 
-const names=["Juan","Carlos","Luis","David","Sergio","Miguel","Antonio","Jorge"];
-const surnames=["García","López","Martínez","Sánchez","Fernández","Pérez"];
-function rand(a){return a[Math.floor(Math.random()*a.length)]}
+let citizens=[];
+let vehicles=[];
 
-let citizens=[]; let vehicles=[];
 for(let i=0;i<200;i++){
- let name=rand(names)+" "+rand(surnames);
- let car="Seat Ibiza "+(1000+i);
- citizens.push({id:i,name,phone:"6"+Math.floor(10000000+Math.random()*89999999),car});
- vehicles.push({plate:""+(1000+i)+"ABC",model:car,owner:name});
+  citizens.push({name:"Ciudadano "+i, phone:"600000"+i, address:"Calle "+i});
+}
+for(let i=0;i<100;i++){
+  vehicles.push({model:"Coche "+i, owner:i});
 }
 
-function back(){
- document.querySelectorAll('.page').forEach(p=>p.style.display='none');
- document.getElementById('hub').style.display='block';
-}
-function openCitizens(){hub.style.display='none';citizensDiv().style.display='block';renderCitizens('')}
-function openVehicles(){hub.style.display='none';vehiclesDiv().style.display='block';renderVehicles('')}
-function citizensDiv(){return document.getElementById('citizens')}
-function vehiclesDiv(){return document.getElementById('vehicles')}
-
-function renderCitizens(q){
- let list=document.getElementById('citList'); list.innerHTML='';
- citizens.filter(c=>c.name.toLowerCase().includes(q.toLowerCase()))
- .forEach(c=>{
-   let li=document.createElement('li');
-   li.innerHTML=c.name+' <button class="ver" onclick="alert(\'Ficha: '+c.name+' | '+c.phone+' | '+c.car+'\')">Ver</button>';
-   list.appendChild(li);
- })
+function login(){
+ if(user.value==="Pol Beltran" && pass.value==="Polbeltran5."){
+   loginPage.classList.add("hidden");
+   hub.classList.remove("hidden");
+ } else alert("Credenciales incorrectas");
 }
 
-function renderVehicles(q){
- let list=document.getElementById('vehList'); list.innerHTML='';
- vehicles.filter(v=>v.model.toLowerCase().includes(q.toLowerCase()))
- .forEach(v=>{
-   let li=document.createElement('li');
-   li.innerHTML=v.model+' <button class="ver" onclick="alert(\'Vehículo: '+v.model+' | '+v.plate+' | '+v.owner+'\')">Ver</button>';
-   list.appendChild(li);
- })
+function openCitizens(){
+ hub.classList.add("hidden");
+ citizensPage.classList.remove("hidden");
+ citizensPage.innerHTML="<button onclick='backHub()'>← Volver</button><h2>Ciudadanos</h2>";
+ citizens.forEach((c,i)=>{
+   citizensPage.innerHTML+=`<div class="listItem">${c.name}<button onclick="showCitizen(${i})">Ver</button></div>`;
+ });
+}
+
+function openVehicles(){
+ hub.classList.add("hidden");
+ vehiclesPage.classList.remove("hidden");
+ vehiclesPage.innerHTML="<button onclick='backHub()'>← Volver</button><h2>Vehículos</h2>";
+ vehicles.forEach((v,i)=>{
+   vehiclesPage.innerHTML+=`<div class="listItem">${v.model}<button onclick="showVehicle(${i})">Ver</button></div>`;
+ });
+}
+
+function showCitizen(i){
+ citizensPage.classList.add("hidden");
+ detailPage.classList.remove("hidden");
+ let c=citizens[i];
+ detailPage.innerHTML=`<button onclick='openCitizens()'>← Volver</button>
+ <h2>${c.name}</h2>
+ Tel: ${c.phone}<br>Dirección: ${c.address}`;
+}
+
+function showVehicle(i){
+ vehiclesPage.classList.add("hidden");
+ detailPage.classList.remove("hidden");
+ let v=vehicles[i];
+ detailPage.innerHTML=`<button onclick='openVehicles()'>← Volver</button>
+ <h2>${v.model}</h2>
+ Propietario: <span class='link' onclick='showCitizen(${v.owner})'>Ciudadano ${v.owner}</span>`;
+}
+
+function backHub(){
+ citizensPage.classList.add("hidden");
+ vehiclesPage.classList.add("hidden");
+ detailPage.classList.add("hidden");
+ hub.classList.remove("hidden");
 }
