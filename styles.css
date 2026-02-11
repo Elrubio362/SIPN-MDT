@@ -1,6 +1,6 @@
 body{background:#071029;color:white;font-family:Arial;padding:20px}.screen{min-height:90vh}button,input,textarea{padding:10px;margin:6px;border-radius:8px;border:none}.grid{display:grid;grid-template-columns:1fr 1fr;height:80vh;gap:12px}.card{background:#123;padding:10px;margin:6px;border-radius:6px}img{border-radius:8px;margin:6px}
 .login{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh}
-.loginLogo{width:120px;margin-bottom:10px}
-.loginTitle{margin-bottom:15px}
-#screen-login input{width:260px}
-#screen-login button{width:180px}
+.loginLogo{width:80px;margin-bottom:8px}
+.loginTitle{margin:10px 0 18px 0;font-size:42px}
+#screen-login input{width:260px;margin:6px 0}
+#screen-login button{width:180px;margin-top:10px}
