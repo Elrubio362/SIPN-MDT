@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,24 +6,36 @@
 </head>
 <body>
 
-<div id="loginScreen" class="screen center">
+<!-- LOGIN -->
+<div id="login" class="screen center">
   <h1>SIPN</h1>
   <input id="user" placeholder="Usuario"><br>
   <input id="pass" type="password" placeholder="Contraseña"><br>
   <button onclick="login()">Entrar</button>
 </div>
 
-<div id="hubScreen" class="screen hidden grid">
-  <div class="tile" onclick="openCitizens()">Ciudadanos</div>
-  <div class="tile">Vehículos</div>
+<!-- HUB -->
+<div id="hub" class="screen hidden grid">
+  <div class="tile" onclick="openScreen('citizens')">Ciudadanos</div>
+  <div class="tile" onclick="openScreen('vehicles')">Vehículos</div>
   <div class="tile">Sistema policial</div>
   <div class="tile">Crear ciudadano</div>
 </div>
 
-<div id="citizensScreen" class="screen hidden">
+<!-- CIUDADANOS -->
+<div id="citizens" class="screen hidden">
   <button onclick="goHub()">← Volver</button>
   <h2>Ciudadanos</h2>
+  <input id="searchCitizen" placeholder="Buscar...">
   <div id="citizenList"></div>
+</div>
+
+<!-- VEHICULOS -->
+<div id="vehicles" class="screen hidden">
+  <button onclick="goHub()">← Volver</button>
+  <h2>Vehículos</h2>
+  <input id="searchVehicle" placeholder="Buscar...">
+  <div id="vehicleList"></div>
 </div>
 
 <script src="app.js"></script>
