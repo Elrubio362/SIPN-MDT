@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,14 +16,11 @@
   <button onclick="login()">Entrar</button>
 </div>
 
-<div id="hub" class="hidden">
-  <h1 class="title">MDT</h1>
-  <div class="grid">
-    <div class="card" onclick="openCitizens()">Ciudadanos</div>
-    <div class="card" onclick="openVehicles()">Vehículos</div>
-    <div class="card">Sistema policial</div>
-    <div class="card">Crear ciudadano</div>
-  </div>
+<div id="hub" class="hidden hubGrid">
+  <div class="hubBtn" onclick="openCitizens()">Ciudadanos</div>
+  <div class="hubBtn" onclick="openVehicles()">Vehículos</div>
+  <div class="hubBtn">Sistema policial</div>
+  <div class="hubBtn">Crear ciudadano</div>
 </div>
 
 <div id="citizensPage" class="hidden page"></div>
