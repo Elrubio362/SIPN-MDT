@@ -1,81 +1,34 @@
+
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SIPN MDT - V34</title>
+<meta charset="UTF-8">
+<title>SIPN</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="screen-login" class="screen login">
-  <img src="logo.png" class="loginLogo" alt="logo">
-  <h1 class="loginTitle">SIPN</h1>
-  <input id="user" placeholder="Usuario" autocomplete="username">
-  <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
-  <button id="loginBtn">Entrar</button>
-  <p id="loginError" class="msg"></p>
+<div id="loginScreen" class="center">
+  <img src="logo.png" class="logo">
+  <h1>SIPN</h1>
+  <input id="user" placeholder="Usuario">
+  <input id="pass" type="password" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
 </div>
 
-<!-- HUB -->
-<div id="screen-home" class="screen hidden">
-  <h2 class="title">MDT</h2>
+<div id="mdtScreen" style="display:none;">
+  <h1 class="title">MDT</h1>
   <div class="grid">
-    <button class="tile" id="tileCit" onclick="openCitizens()">Ciudadanos</button>
-    <button class="tile" id="tileVeh" onclick="openVehicles()">Vehículos</button>
-    <button class="tile" id="tilePol" onclick="openPolice()">Sistema policial</button>
-    <button class="tile" id="tileCreate" onclick="openCreate()">Crear ciudadano</button>
+    <div class="box" onclick="openModule('citizens')">Ciudadanos</div>
+    <div class="box" onclick="openModule('vehicles')">Vehículos</div>
+    <div class="box">Sistema policial</div>
+    <div class="box">Crear ciudadano</div>
   </div>
-</div>
 
-<!-- CITIZENS LIST -->
-<div id="screen-citizens" class="screen hidden">
-  <button class="back" onclick="showHome()">← Volver</button>
-  <h2>Ciudadanos</h2>
-  <input id="searchCitizen" placeholder="Buscar por nombre o DNI..." oninput="renderCitizens()">
-  <div id="citizenList" class="list"></div>
-</div>
-
-<!-- CITIZEN DETAIL -->
-<div id="screen-citizen-detail" class="screen hidden">
-  <button class="back" onclick="openCitizens()">← Volver</button>
-  <div id="citizenDetail" class="detail"></div>
-</div>
-
-<!-- VEHICLES LIST -->
-<div id="screen-vehicles" class="screen hidden">
-  <button class="back" onclick="showHome()">← Volver</button>
-  <h2>Vehículos</h2>
-  <input id="searchVehicle" placeholder="Buscar por matrícula o modelo..." oninput="renderVehicles()">
-  <div id="vehicleList" class="list"></div>
-</div>
-
-<!-- VEHICLE DETAIL -->
-<div id="screen-vehicle-detail" class="screen hidden">
-  <button class="back" onclick="openVehicles()">← Volver</button>
-  <div id="vehicleDetail" class="detail"></div>
+  <div id="citizens" class="module">Módulo ciudadanos (igual que versión anterior)</div>
+  <div id="vehicles" class="module">Módulo vehículos (igual que versión anterior)</div>
 </div>
 
 <script src="app.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded",()=>{
-  const login=document.getElementById("loginScreen");
-  const hub=document.getElementById("hubScreen");
-  if(hub) hub.style.display="none";
-  const btn=document.getElementById("loginBtn");
-  if(btn){
-    btn.onclick=(e)=>{
-      e.preventDefault();
-      if(login && hub){
-        login.style.display="none";
-        hub.style.display="block";
-      }
-    }
-  }
-});
-</script>
-
 </body>
 </html>

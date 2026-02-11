@@ -1,30 +1,10 @@
-:root{--bg:#0d2747;--accent:#4f7df0;--card:#12314f;--muted:#9fb6e6;--white:#fff}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased}
-.screen{padding:16px;min-height:100vh}
-.hidden{display:none}
 
-/* LOGIN centered */
-.login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;padding:0;text-align:center}
-.loginLogo{width:80px;margin-bottom:8px}
-.loginTitle{font-size:36px;margin:6px 0 14px 0}
-.login input{width:280px;padding:10px;border-radius:10px;border:none;margin:6px 0}
-.login button{width:180px;padding:10px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
-.msg{color:#ffc7c7;margin-top:8px}
-
-/* HUB */
-.title{text-align:center;margin:6px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:20px;max-width:1100px;margin:22px auto;height:72vh;padding:12px}
-.tile{border-radius:14px;background:var(--accent);border:none;color:white;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:20px}
-
-/* Lists */
-.list{display:flex;flex-direction:column;gap:10px;margin-top:12px;max-width:1000px;margin-left:auto;margin-right:auto}
-.item{background:rgba(255,255,255,0.03);padding:12px;border-radius:10px;display:flex;justify-content:space-between;align-items:center}
-.item .meta{color:var(--muted);font-size:13px}
-
-/* Detail */
-.detail{background:var(--card);padding:16px;border-radius:10px;max-width:900px;margin:12px auto}
-.detail h3{margin-top:0}
-.back{position:fixed;left:12px;top:12px;background:transparent;color:#fff;padding:8px;border:1px solid rgba(255,255,255,0.06);border-radius:8px;cursor:pointer}
-
-/* responsive */
-@media(max-width:700px){.grid{height:auto;grid-template-columns:1fr;grid-template-rows:repeat(4,120px)}.login input{width:92vw}.login button{width:60vw}}
+body{background:#0b1220;color:white;font-family:Arial;margin:0}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh}
+.logo{width:120px;margin-bottom:10px}
+input{margin:5px;padding:10px;width:220px}
+button{padding:10px 20px;margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;height:80vh}
+.box{border:1px solid #333;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer}
+.module{display:none;padding:20px}
+.title{text-align:center}
