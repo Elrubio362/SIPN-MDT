@@ -1,46 +1,24 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SIPN MDT</title>
-<link rel="stylesheet" href="styles.css"/>
+<meta charset="UTF-8">
+<title>SIPN</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<section id="login">
-  <div class="loginBox">
-    <img src="logo.png" class="logo">
-    <h1>SIPN</h1>
-    <input id="user" placeholder="Usuario" value="Pol Beltran">
-    <input id="pass" type="password" placeholder="Contraseña" value="Polbeltran5">
-    <button id="enter">Entrar</button>
-  </div>
-</section>
+<div id="loginPage" class="center">
+  <h1>SIPN</h1>
+  <input id="user" placeholder="Usuario"><br>
+  <input id="pass" type="password" placeholder="Contraseña"><br>
+  <button onclick="login()">Entrar</button>
+  <p id="msg"></p>
+</div>
 
-<section id="hub" class="hidden">
-  <div class="grid">
-    <button id="goCit">Ciudadanos</button>
-    <button id="goVeh">Vehículos</button>
-    <button>Sistema policial</button>
-    <button>Crear ciudadano</button>
-  </div>
-</section>
-
-<section id="citizens" class="hidden">
-<button class="back">← Volver</button>
-<input id="searchCit" placeholder="Buscar ciudadano">
-<ul id="citList"></ul>
-</section>
-
-<section id="vehicles" class="hidden">
-<button class="back">← Volver</button>
-<input id="searchVeh" placeholder="Buscar vehículo">
-<ul id="vehList"></ul>
-</section>
-
-<section id="citizenDetail" class="hidden"><button class="back">← Volver</button><div id="citDetail"></div></section>
-<section id="vehicleDetail" class="hidden"><button class="back">← Volver</button><div id="vehDetail"></div></section>
+<div id="hubPage" style="display:none;">
+  <h2>MDT HUB</h2>
+  <p>Hub cargado correctamente.</p>
+</div>
 
 <script src="app.js"></script>
 </body>
