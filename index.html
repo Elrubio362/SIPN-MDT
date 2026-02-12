@@ -1,42 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SIPN MDT v49</title>
+<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- LOGIN SCREEN -->
+  <section id="screen-login" class="screen centered">
+    <img src="logo.png" class="logo" alt="logo" />
+    <h1 class="title">SIPN</h1>
+    <input id="user" placeholder="Usuario" autocomplete="username" />
+    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password" />
+    <button id="btnLogin" onclick="login()">Entrar</button>
+    <p id="loginError" class="error"></p>
+  </section>
 
-<!-- LOGIN -->
-<div id="login" class="screen center">
-  <h1>SIPN</h1>
-  <input id="user" placeholder="Usuario"><br>
-  <input id="pass" type="password" placeholder="Contraseña"><br>
-  <button onclick="login()">Entrar</button>
-</div>
+  <!-- HUB SCREEN -->
+  <section id="screen-hub" class="screen hidden">
+    <div class="grid-hub">
+      <div class="hub-card" onclick="openModule('citizens')">Ciudadanos</div>
+      <div class="hub-card" onclick="openModule('vehicles')">Vehículos</div>
+      <div class="hub-card">Sistema policial</div>
+      <div class="hub-card">Crear ciudadano</div>
+    </div>
+  </section>
 
-<!-- HUB -->
-<div id="hub" class="screen hidden grid">
-  <div class="tile" onclick="openScreen('citizens')">Ciudadanos</div>
-  <div class="tile" onclick="openScreen('vehicles')">Vehículos</div>
-  <div class="tile">Sistema policial</div>
-  <div class="tile">Crear ciudadano</div>
-</div>
+  <!-- CITIZENS SCREEN (full page) -->
+  <section id="screen-citizens" class="screen hidden">
+    <div class="toolbar">
+      <button class="back" onclick="showHub()">← Volver</button>
+      <input id="searchCit" class="search" placeholder="Buscar por nombre, DNI o teléfono" oninput="renderCitizens()" />
+    </div>
+    <div id="citizenList" class="list"></div>
+  </section>
 
-<!-- CIUDADANOS -->
-<div id="citizens" class="screen hidden">
-  <button onclick="goHub()">← Volver</button>
-  <h2>Ciudadanos</h2>
-  <input id="searchCitizen" placeholder="Buscar...">
-  <div id="citizenList"></div>
-</div>
+  <!-- VEHICLES SCREEN (full page) -->
+  <section id="screen-vehicles" class="screen hidden">
+    <div class="toolbar">
+      <button class="back" onclick="showHub()">← Volver</button>
+      <input id="searchVeh" class="search" placeholder="Buscar por matrícula o modelo" oninput="renderVehicles()" />
+    </div>
+    <div id="vehicleList" class="list"></div>
+  </section>
 
-<!-- VEHICULOS -->
-<div id="vehicles" class="screen hidden">
-  <button onclick="goHub()">← Volver</button>
-  <h2>Vehículos</h2>
-  <input id="searchVehicle" placeholder="Buscar...">
-  <div id="vehicleList"></div>
-</div>
+  <!-- DETAIL SCREEN (reused for citizen/vehicle details) -->
+  <section id="screen-detail" class="screen hidden">
+    <div id="detailBack"><button class="back" onclick="detailBack()">← Volver</button></div>
+    <div id="detailContent" class="detail"></div>
+  </section>
 
 <script src="app.js"></script>
 </body>
