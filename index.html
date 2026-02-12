@@ -1,56 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SIPN MDT v49</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SIPN MDT</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- LOGIN SCREEN -->
-  <section id="screen-login" class="screen centered">
-    <img src="logo.png" class="logo" alt="logo" />
-    <h1 class="title">SIPN</h1>
-    <input id="user" placeholder="Usuario" autocomplete="username" />
-    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password" />
-    <button id="btnLogin" onclick="login()">Entrar</button>
-    <p id="loginError" class="error"></p>
-  </section>
-
-  <!-- HUB SCREEN -->
-  <section id="screen-hub" class="screen hidden">
-    <div class="grid-hub">
-      <div class="hub-card" onclick="openModule('citizens')">Ciudadanos</div>
-      <div class="hub-card" onclick="openModule('vehicles')">Vehículos</div>
-      <div class="hub-card">Sistema policial</div>
-      <div class="hub-card">Crear ciudadano</div>
+  <main id="screen-login" class="screen active">
+    <div class="login-wrap">
+      <img id="logo" src="logo.png" alt="logo" />
+      <h1>SIPN</h1>
+      <input id="login-user" type="text" placeholder="Usuario" value="Pol Beltran" />
+      <input id="login-pass" type="password" placeholder="Contraseña" value="Polbeltran5" />
+      <button id="login-btn">Entrar</button>
     </div>
-  </section>
+  </main>
 
-  <!-- CITIZENS SCREEN (full page) -->
-  <section id="screen-citizens" class="screen hidden">
+  <main id="screen-hub" class="screen">
+    <div class="hub-grid">
+      <button class="hub-card" data-target="screen-citizens">Ciudadanos</button>
+      <button class="hub-card" data-target="screen-vehicles">Vehículos</button>
+      <button class="hub-card" data-target="screen-police">Sistema policial</button>
+      <button class="hub-card" data-target="screen-create">Crear ciudadano</button>
+    </div>
+  </main>
+
+  <main id="screen-citizens" class="screen">
     <div class="toolbar">
-      <button class="back" onclick="showHub()">← Volver</button>
-      <input id="searchCit" class="search" placeholder="Buscar por nombre, DNI o teléfono" oninput="renderCitizens()" />
+      <button class="back-btn" data-back="screen-hub">← Volver</button>
+      <input id="search-citizens" placeholder="Buscar (nombre, DNI, teléfono)" />
     </div>
-    <div id="citizenList" class="list"></div>
-  </section>
+    <ul id="citizen-list" class="list"></ul>
+  </main>
 
-  <!-- VEHICLES SCREEN (full page) -->
-  <section id="screen-vehicles" class="screen hidden">
+  <main id="screen-vehicles" class="screen">
     <div class="toolbar">
-      <button class="back" onclick="showHub()">← Volver</button>
-      <input id="searchVeh" class="search" placeholder="Buscar por matrícula o modelo" oninput="renderVehicles()" />
+      <button class="back-btn" data-back="screen-hub">← Volver</button>
+      <input id="search-vehicles" placeholder="Buscar (matrícula, marca/modelo)" />
     </div>
-    <div id="vehicleList" class="list"></div>
-  </section>
+    <ul id="vehicle-list" class="list"></ul>
+  </main>
 
-  <!-- DETAIL SCREEN (reused for citizen/vehicle details) -->
-  <section id="screen-detail" class="screen hidden">
-    <div id="detailBack"><button class="back" onclick="detailBack()">← Volver</button></div>
-    <div id="detailContent" class="detail"></div>
-  </section>
+  <main id="screen-citizen-detail" class="screen">
+    <div class="toolbar">
+      <button class="back-btn" data-back="screen-citizens">← Volver</button>
+    </div>
+    <div id="citizen-detail" class="detail"></div>
+  </main>
 
-<script src="app.js"></script>
+  <main id="screen-vehicle-detail" class="screen">
+    <div class="toolbar">
+      <button class="back-btn" data-back="screen-vehicles">← Volver</button>
+    </div>
+    <div id="vehicle-detail" class="detail"></div>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
