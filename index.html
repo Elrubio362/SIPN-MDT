@@ -1,1 +1,35 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>SIPN · MDT Policía</title><link rel="stylesheet" href="style.css"></head><body><h1>SIPN base</h1><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIPN MDT v46</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="centered">
+  <img src="logo.png" class="logo" alt="logo">
+  <h1 class="title">SIPN</h1>
+  <input id="user" placeholder="Usuario" autocomplete="username">
+  <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
+  <button id="enterBtn" onclick="login()">Entrar</button>
+  <p id="loginMsg" class="msg"></p>
+</div>
+
+<!-- MDT HUB -->
+<div id="mdtPage" style="display:none">
+  <div id="hub" class="gridHub" role="navigation" aria-label="Hub MDT">
+    <div class="hubCard" onclick="openCitizens()" id="cardCitizens">Ciudadanos</div>
+    <div class="hubCard" onclick="openVehicles()" id="cardVehicles">Vehículos</div>
+    <div class="hubCard" id="cardPolice">Sistema policial</div>
+    <div class="hubCard" id="cardCreate">Crear ciudadano</div>
+  </div>
+
+  <main id="content" class="contentArea"></main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
