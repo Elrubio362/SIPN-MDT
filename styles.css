@@ -1,1 +1,8 @@
-/* styles placeholder */
+
+body{font-family:Arial;text-align:center}
+.hidden{display:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;height:100vh}
+.tile{border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer}
+.page{padding:20px}
+.card{border:1px solid #ccc;margin:10px;padding:10px}
+.logo{width:120px}
