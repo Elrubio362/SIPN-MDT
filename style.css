@@ -1,1 +1,96 @@
-body{background:#0b1a2e;color:white;font-family:Segoe UI;}
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+body {
+    background: #0b1a2e; color: #e0e6ed;
+    height: 100vh; display: flex; justify-content: center; align-items: center;
+}
+.screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f1f2f; overflow-y: auto; padding: 16px;
+}
+.hidden { display: none !important; }
+.app-header {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #0a1a26; padding: 12px 16px; border-bottom: 2px solid #2d4a6e;
+    border-radius: 0 0 12px 12px; margin-bottom: 20px;
+}
+.app-header h2 { color: white; font-size: 1.4rem; }
+.btn-back, .btn-logout, .btn-settings {
+    background: transparent; border: 1px solid #4b7aa1; color: white;
+    padding: 8px 14px; border-radius: 30px; cursor: pointer;
+}
+#login-screen {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: linear-gradient(145deg, #0e1e2c, #09141e);
+}
+.login-container {
+    background: rgba(10,25,40,0.9); padding: 30px 25px; border-radius: 36px;
+    width: 90%; max-width: 400px; border: 1px solid #2f5777; text-align: center;
+}
+.logo {
+    width: 100px; height: 100px; background: #1f3a4f; border-radius: 50%;
+    margin: 0 auto 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem; font-weight: 800; color: #b3e4ff; border: 3px solid #568fc2;
+}
+.login-container h1 { color: #b8e2ff; font-size: 2.4rem; margin-bottom: 20px; }
+.input-group { margin-bottom: 20px; text-align: left; }
+.input-group label {
+    display: block; font-size: 0.8rem; color: #aad0f5;
+    text-transform: uppercase; margin-bottom: 5px;
+}
+.input-group input {
+    width: 100%; padding: 14px 18px; background: #162b39;
+    border: 1px solid #2b5f80; border-radius: 40px; color: white; font-size: 1rem;
+}
+.btn-entrar {
+    background: #0e5a8a; border: none; color: white; font-size: 1.3rem;
+    font-weight: bold; padding: 14px 20px; width: 100%; border-radius: 60px;
+    margin-top: 20px; box-shadow: 0 5px 0 #07344f; cursor: pointer;
+}
+.btn-entrar:active { transform: translateY(3px); box-shadow: 0 2px 0 #07344f; }
+.hub-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 16px; margin-top: 20px;
+}
+.hub-card {
+    background: white; color: #0a1a2c; border-radius: 28px; padding: 28px 8px;
+    text-align: center; font-size: 1.2rem; font-weight: 700;
+    box-shadow: 0 10px 0 #a0b8cc; display: flex; align-items: center;
+    justify-content: center; aspect-ratio: 1/1; border: 2px solid #dfebf5;
+    cursor: pointer;
+}
+.hub-card:active { transform: translateY(6px); box-shadow: 0 4px 0 #7e9eb3; }
+.search-box {
+    width: 100%; padding: 12px 18px; background: #132a36;
+    border: 1px solid #2d6b8f; border-radius: 50px; color: white; margin-bottom: 20px;
+}
+.list-item {
+    background: #112531; padding: 14px 18px; margin-bottom: 8px; border-radius: 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-left: 6px solid #2d8fc5;
+}
+.list-item button {
+    background: white; border: none; color: #0c1e2b; font-weight: 600;
+    padding: 10px 18px; border-radius: 40px; cursor: pointer;
+}
+.profile-field { margin-bottom: 18px; }
+.profile-field label { font-size: 0.8rem; color: #88b8d8; display: block; }
+.profile-field span {
+    background: #0e1e2c; padding: 10px 16px; border-radius: 18px;
+    margin-top: 4px; color: white; display: block;
+}
+.btn-save {
+    background: #1c6a9f; border: none; color: white; padding: 16px;
+    border-radius: 60px; font-size: 1.2rem; font-weight: bold; width: 100%;
+    margin: 20px 0; cursor: pointer;
+}
+.full-form input, .full-form textarea {
+    width: 100%; padding: 14px; margin-bottom: 12px;
+    background: #1c3341; border: 1px solid #2a6c8a; border-radius: 16px; color: white;
+}
+.camera-mock {
+    background: #162b36; padding: 35px; text-align: center; border-radius: 30px;
+    border: 3px dashed #438bb7; margin: 20px 0;
+}
+@media (max-width:480px) { .hub-card { font-size: 1rem; padding: 20px 4px; } }
