@@ -132,18 +132,37 @@ function showScreen(screenId) {
 
 // LOGIN
 function login() {
+    const debugDiv = document.getElementById('debugInfo');
+    debugDiv.style.display = 'block';
+    let debugMsg = '';
+    
+    debugMsg += '🔍 Iniciando login...\n';
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
     const errorMsg = document.getElementById('loginError');
 
+    debugMsg += '👤 Usuario: "' + username + '"\n';
+    debugMsg += '🔑 Contraseña: "' + password + '"\n';
+
     const users = JSON.parse(localStorage.getItem('users'));
+    debugMsg += '📊 Usuarios en BD: ' + JSON.stringify(users) + '\n';
+    
     const user = users.find(u => u.username === username && u.password === password);
+    debugMsg += '✅ Usuario encontrado: ' + (user ? 'SÍ' : 'NO') + '\n';
+
+    debugDiv.innerHTML = debugMsg.replace(/\n/g, '<br>');
 
     if (user) {
         currentUser = user;
         errorMsg.textContent = '';
-        showScreen('mainHub');
+        debugMsg += '🎉 Login exitoso!\n';
+        debugDiv.innerHTML = debugMsg.replace(/\n/g, '<br>');
+        setTimeout(() => {
+            showScreen('mainHub');
+        }, 500);
     } else {
+        debugMsg += '❌ Login fallido\n';
+        debugDiv.innerHTML = debugMsg.replace(/\n/g, '<br>');
         errorMsg.textContent = 'Usuario o contraseña incorrectos';
     }
 }
@@ -522,13 +541,30 @@ function loadUsers() {
 
 // INITIALIZE WHEN DOM IS READY
 document.addEventListener('DOMContentLoaded', function() {
+    const debugDiv = document.getElementById('debugInfo');
+    if (debugDiv) {
+        debugDiv.style.display = 'block';
+        debugDiv.innerHTML = '⏳ Cargando aplicación...<br>';
+    }
+    
     initializeData();
+    
+    if (debugDiv) {
+        debugDiv.innerHTML += '✅ Datos inicializados<br>';
+    }
     
     // LOGIN
     document.getElementById('loginButton').addEventListener('click', login);
     document.getElementById('loginPassword').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') login();
     });
+    
+    if (debugDiv) {
+        debugDiv.innerHTML += '✅ Botón de login listo<br>';
+        setTimeout(() => {
+            debugDiv.innerHTML += '👉 Puedes hacer login ahora<br>';
+        }, 500);
+    }
     
     // LOGOUT
     document.getElementById('logoutButton').addEventListener('click', () => {

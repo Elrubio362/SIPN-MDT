@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- VERSION INDICATOR -->
+    <div style="position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #4CAF50; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 9999; border: 2px solid #4CAF50;">
+        V2
+    </div>
+    
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="screen active">
         <div class="login-container">
@@ -26,6 +31,7 @@
                 </div>
                 <button id="loginButton" class="btn btn-primary">Entrar</button>
                 <div id="loginError" class="error-message"></div>
+                <div id="debugInfo" style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; font-size: 12px; text-align: left; display: none;"></div>
             </div>
         </div>
     </div>
