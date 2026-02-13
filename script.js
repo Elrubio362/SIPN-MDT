@@ -1,551 +1,1237 @@
-(function(){
-    "use strict";
+// STATE MANAGEMENT
+let currentUser = null;
+let currentScreen = 'loginScreen';
+let currentCitizenId = null;
+let currentVehicleId = null;
+let currentCaseId = null;
 
-    // ------------------------------------------------------------
-    // CONFIGURACIÓN DE ALMACENAMIENTO LOCAL
-    // ------------------------------------------------------------
-    const STORAGE_KEYS = {
-        CITIZENS: 'mdt_citizens',
-        VEHICLES: 'mdt_vehicles',
-        CASES: 'mdt_cases',
-        USERS: 'mdt_users',
-        REPORTS: 'mdt_reports',
-        EVIDENCE: 'mdt_evidence',
-        ALERTS: 'mdt_alerts',
-        LOGGED_IN: 'mdt_loggedIn'
-    };
-
-    // Funciones auxiliares de localStorage
-    const load = (key, defaultValue) => {
-        try {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : defaultValue;
-        } catch {
-            return defaultValue;
-        }
-    };
-    const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-
-    // ------------------------------------------------------------
-    // INICIALIZACIÓN DE DATOS POR DEFECTO
-    // ------------------------------------------------------------
-    function initializeDatabase() {
-        // Usuario por defecto
-        if (!load(STORAGE_KEYS.USERS, []).length) {
-            save(STORAGE_KEYS.USERS, [
-                { id: '1', username: 'Pol Beltran', password: 'Polbeltran5', rank: 'Oficial', fullName: 'Pol Beltran' }
-            ]);
-        }
-
-        // 200 ciudadanos aleatorios
-        if (!localStorage.getItem(STORAGE_KEYS.CITIZENS)) {
-            const nombres = ['Antonio', 'María', 'José', 'Laura', 'Carlos', 'Ana', 'David', 'Elena', 'Javier', 'Sara', 'Daniel', 'Paula', 'Fernando', 'Lucía', 'Manuel', 'Cristina'];
-            const apellidos = ['García', 'Martínez', 'López', 'Sánchez', 'Fernández', 'Pérez', 'Gómez', 'Ruiz', 'Díaz', 'Torres', 'Romero', 'Navarro', 'Castro', 'Ortega'];
-            const nacionalidades = ['Española', 'Colombiana', 'Argentina', 'Mexicana', 'Francesa', 'Italiana', 'Portuguesa'];
-            const trabajos = ['Albañil', 'Profesor', 'Camarero', 'Conductor', 'Enfermero', 'Abogado', 'Comerciante', 'Estudiante', 'Jubilado', 'Administrativo'];
-            const citizens = [];
-            for (let i = 0; i < 200; i++) {
-                const nombre = nombres[Math.floor(Math.random() * nombres.length)];
-                const apellido1 = apellidos[Math.floor(Math.random() * apellidos.length)];
-                const apellido2 = apellidos[Math.floor(Math.random() * apellidos.length)];
-                const fullName = `${nombre} ${apellido1} ${apellido2}`;
-                const dni = `${Math.floor(Math.random() * 100000000)}${String.fromCharCode(65 + Math.floor(Math.random() * 26))}`;
-                const telefono = `6${Math.floor(Math.random() * 100000000)}`.slice(0,9);
-                const direccion = `C/ ${apellidos[Math.floor(Math.random()*apellidos.length)]}, ${Math.floor(Math.random()*100)}`;
-                const nacionalidad = nacionalidades[Math.floor(Math.random() * nacionalidades.length)];
-                const trabajo = trabajos[Math.floor(Math.random() * trabajos.length)];
-                const antecedentes = Math.random() > 0.7;
-                const buscaCaptura = Math.random() > 0.9;
-                citizens.push({
-                    id: `cit-${i}-${Date.now()}`,
-                    nombre: fullName,
-                    dni, telefono, direccion, nacionalidad, trabajo,
-                    antecedentes: antecedentes,
-                    antecedentesDesc: antecedentes ? 'Hurto menor / 2019' : '',
-                    buscaCaptura: buscaCaptura,
-                    foto: null,
-                    vehiculoAsignado: null
-                });
-            }
-            save(STORAGE_KEYS.CITIZENS, citizens);
-        }
-
-        // 200 vehículos aleatorios
-        if (!localStorage.getItem(STORAGE_KEYS.VEHICLES)) {
-            const marcas = ['Seat', 'Renault', 'Peugeot', 'Citroën', 'Ford', 'Toyota', 'Volkswagen', 'Mercedes', 'BMW', 'Audi'];
-            const modelos = ['Ibiza', 'Clio', '308', 'C4', 'Focus', 'Corolla', 'Golf', 'Clase C', 'Serie 3', 'A3'];
-            const colores = ['Blanco', 'Negro', 'Gris', 'Azul', 'Rojo', 'Plateado'];
-            const vehicles = [];
-            for (let i = 0; i < 200; i++) {
-                const marca = marcas[Math.floor(Math.random() * marcas.length)];
-                const modelo = modelos[Math.floor(Math.random() * modelos.length)];
-                const matricula = `${Math.floor(Math.random() * 10000)}${String.fromCharCode(65 + Math.floor(Math.random()*26))}${String.fromCharCode(65 + Math.floor(Math.random()*26))}${String.fromCharCode(65 + Math.floor(Math.random()*26))}`;
-                vehicles.push({
-                    id: `car-${i}-${Date.now()}`,
-                    marca, modelo, matricula,
-                    color: colores[Math.floor(Math.random() * colores.length)],
-                    bastidor: `${Math.floor(Math.random() * 1000000000000000)}`.slice(0,17),
-                    itv: `202${Math.floor(Math.random() * 4)}-0${Math.floor(Math.random() * 9)+1}-${Math.floor(Math.random() * 20)+1}`,
-                    ubicacion: `Polígono ${Math.floor(Math.random() * 30)}`,
-                    robado: Math.random() > 0.8,
-                    alertaRobo: Math.random() > 0.8 ? 'Posible uso en atraco' : '',
-                    propietarioId: null
-                });
-            }
-            save(STORAGE_KEYS.VEHICLES, vehicles);
-        }
-
-        // Otras colecciones vacías por defecto
-        if (!localStorage.getItem(STORAGE_KEYS.CASES)) save(STORAGE_KEYS.CASES, []);
-        if (!localStorage.getItem(STORAGE_KEYS.REPORTS)) save(STORAGE_KEYS.REPORTS, []);
-        if (!localStorage.getItem(STORAGE_KEYS.EVIDENCE)) save(STORAGE_KEYS.EVIDENCE, []);
-        if (!localStorage.getItem(STORAGE_KEYS.ALERTS)) save(STORAGE_KEYS.ALERTS, []);
+// DATA INITIALIZATION
+function initializeData() {
+    // Initialize users if not exists
+    if (!localStorage.getItem('users')) {
+        const defaultUsers = [
+            { username: 'Pol Beltran', password: 'Polbeltran5', rank: 'Inspector' }
+        ];
+        localStorage.setItem('users', JSON.stringify(defaultUsers));
     }
 
-    // ------------------------------------------------------------
-    // ESTADO Y NAVEGACIÓN
-    // ------------------------------------------------------------
-    let navigationStack = ['hub'];
-    let currentPage = 'hub';
-    let pageParams = {};
+    // Generate random citizens if not exists
+    if (!localStorage.getItem('citizens')) {
+        const citizens = generateRandomCitizens(200);
+        localStorage.setItem('citizens', JSON.stringify(citizens));
+    }
 
-    const loginScreen = document.getElementById('login-screen');
-    const hubScreen = document.getElementById('hub-screen');
-    const appContent = document.getElementById('app-content');
-    const headerTitle = document.getElementById('header-title');
-    const backBtn = document.getElementById('backBtn');
+    // Generate random vehicles if not exists
+    if (!localStorage.getItem('vehicles')) {
+        const vehicles = generateRandomVehicles(150);
+        localStorage.setItem('vehicles', JSON.stringify(vehicles));
+    }
 
-    // ------------------------------------------------------------
-    // COMPROBAR SESIÓN
-    // ------------------------------------------------------------
-    function checkLoggedIn() {
-        const logged = localStorage.getItem(STORAGE_KEYS.LOGGED_IN) === 'true';
-        if (logged) {
-            loginScreen.classList.add('hidden');
-            hubScreen.classList.remove('hidden');
-            renderPage('hub');
+    // Initialize other data stores
+    if (!localStorage.getItem('cases')) localStorage.setItem('cases', JSON.stringify([]));
+    if (!localStorage.getItem('detentions')) localStorage.setItem('detentions', JSON.stringify([]));
+    if (!localStorage.getItem('multas')) localStorage.setItem('multas', JSON.stringify([]));
+    if (!localStorage.getItem('reports')) localStorage.setItem('reports', JSON.stringify([]));
+    if (!localStorage.getItem('evidences')) localStorage.setItem('evidences', JSON.stringify([]));
+    if (!localStorage.getItem('gangs')) localStorage.setItem('gangs', JSON.stringify([]));
+}
+
+// RANDOM DATA GENERATORS
+function generateRandomCitizens(count) {
+    const firstNames = ['Juan', 'María', 'Carlos', 'Ana', 'Pedro', 'Laura', 'José', 'Carmen', 'Francisco', 'Isabel', 'Antonio', 'Dolores', 'Manuel', 'Pilar', 'David', 'Teresa', 'Javier', 'Rosa', 'Miguel', 'Cristina'];
+    const lastNames = ['García', 'Rodríguez', 'González', 'Fernández', 'López', 'Martínez', 'Sánchez', 'Pérez', 'Gómez', 'Martín', 'Jiménez', 'Ruiz', 'Hernández', 'Díaz', 'Moreno', 'Muñoz', 'Álvarez', 'Romero', 'Alonso', 'Gutiérrez'];
+    const streets = ['Calle Mayor', 'Avenida Principal', 'Calle del Sol', 'Plaza España', 'Calle Real', 'Paseo Marítimo', 'Calle Larga', 'Avenida Constitución'];
+    const jobs = ['Comerciante', 'Profesor', 'Médico', 'Ingeniero', 'Abogado', 'Camarero', 'Mecánico', 'Electricista', 'Empresario', 'Administrativo', 'Desempleado'];
+    const nationalities = ['Española', 'Francesa', 'Italiana', 'Portuguesa', 'Alemana', 'Británica', 'Rumana', 'Marroquí'];
+
+    const citizens = [];
+    for (let i = 0; i < count; i++) {
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName1 = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const lastName2 = lastNames[Math.floor(Math.random() * lastNames.length)];
+        
+        citizens.push({
+            id: 'C' + String(i + 1).padStart(6, '0'),
+            name: `${firstName} ${lastName1} ${lastName2}`,
+            dni: generateDNI(),
+            phone: `6${Math.floor(Math.random() * 90000000 + 10000000)}`,
+            address: `${streets[Math.floor(Math.random() * streets.length)]}, ${Math.floor(Math.random() * 100 + 1)}`,
+            nationality: nationalities[Math.floor(Math.random() * nationalities.length)],
+            job: jobs[Math.floor(Math.random() * jobs.length)],
+            hasRecord: Math.random() < 0.15,
+            recordDetails: '',
+            wanted: Math.random() < 0.05,
+            vehicle: null,
+            photo: null
+        });
+    }
+    return citizens;
+}
+
+function generateRandomVehicles(count) {
+    const brands = ['Seat', 'Renault', 'Peugeot', 'Volkswagen', 'Ford', 'Opel', 'Citroën', 'BMW', 'Mercedes', 'Audi', 'Toyota', 'Nissan', 'Hyundai', 'Kia'];
+    const models = ['Ibiza', 'León', 'Clio', 'Megane', '208', '308', 'Golf', 'Polo', 'Fiesta', 'Focus', 'Corsa', 'Astra', 'C3', 'C4', 'Serie 3', 'Clase A', 'A3', 'A4', 'Corolla', 'Qashqai'];
+    const colors = ['Blanco', 'Negro', 'Gris', 'Plata', 'Azul', 'Rojo', 'Verde', 'Amarillo'];
+
+    const vehicles = [];
+    for (let i = 0; i < count; i++) {
+        const brand = brands[Math.floor(Math.random() * brands.length)];
+        const model = models[Math.floor(Math.random() * models.length)];
+        
+        vehicles.push({
+            id: 'V' + String(i + 1).padStart(6, '0'),
+            brand: brand,
+            model: model,
+            fullName: `${brand} ${model}`,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            plate: generatePlate(),
+            vin: generateVIN(),
+            itv: generateRandomDate(),
+            location: 'Barcelona',
+            stolen: Math.random() < 0.08,
+            stolenDetails: '',
+            owner: null
+        });
+    }
+    return vehicles;
+}
+
+function generateDNI() {
+    const num = Math.floor(Math.random() * 90000000 + 10000000);
+    const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    return num + letters[num % 23];
+}
+
+function generatePlate() {
+    const nums = Math.floor(Math.random() * 9000 + 1000);
+    const letters = 'BCDFGHJKLMNPRSTVWXYZ';
+    const l1 = letters[Math.floor(Math.random() * letters.length)];
+    const l2 = letters[Math.floor(Math.random() * letters.length)];
+    const l3 = letters[Math.floor(Math.random() * letters.length)];
+    return `${nums}${l1}${l2}${l3}`;
+}
+
+function generateVIN() {
+    const chars = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
+    let vin = '';
+    for (let i = 0; i < 17; i++) {
+        vin += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return vin;
+}
+
+function generateRandomDate() {
+    const start = new Date(2020, 0, 1);
+    const end = new Date();
+    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    return date.toISOString().split('T')[0];
+}
+
+// NAVIGATION
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    currentScreen = screenId;
+}
+
+// LOGIN
+document.getElementById('loginButton').addEventListener('click', login);
+document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') login();
+});
+
+function login() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorMsg = document.getElementById('loginError');
+
+    const users = JSON.parse(localStorage.getItem('users'));
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+        currentUser = user;
+        errorMsg.textContent = '';
+        showScreen('mainHub');
+    } else {
+        errorMsg.textContent = 'Usuario o contraseña incorrectos';
+    }
+}
+
+// LOGOUT
+document.getElementById('logoutButton').addEventListener('click', () => {
+    currentUser = null;
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+    showScreen('loginScreen');
+});
+
+// HUB NAVIGATION
+document.querySelectorAll('.hub-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const module = btn.getAttribute('data-module');
+        
+        switch(module) {
+            case 'ciudadanos':
+                loadCitizens();
+                showScreen('ciudadanosModule');
+                break;
+            case 'vehiculos':
+                loadVehicles();
+                showScreen('vehiculosModule');
+                break;
+            case 'sistema':
+                showScreen('sistemaModule');
+                break;
+            case 'crear-ciudadano':
+                resetCreateCitizenForm();
+                showScreen('crearCiudadanoModule');
+                break;
+        }
+    });
+});
+
+// BACK BUTTONS
+document.querySelectorAll('.btn-back').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const currentScreenEl = document.querySelector('.screen.active');
+        const currentId = currentScreenEl.id;
+
+        // Determine where to go back
+        if (currentId === 'ciudadanosModule' || currentId === 'vehiculosModule' || 
+            currentId === 'sistemaModule' || currentId === 'crearCiudadanoModule') {
+            showScreen('mainHub');
+        } else if (currentId === 'citizenProfile') {
+            loadCitizens();
+            showScreen('ciudadanosModule');
+        } else if (currentId === 'vehicleProfile') {
+            loadVehicles();
+            showScreen('vehiculosModule');
+        } else if (currentId.includes('Section') || currentId.includes('Form')) {
+            showScreen('sistemaModule');
         } else {
-            loginScreen.classList.remove('hidden');
-            hubScreen.classList.add('hidden');
-        }
-    }
-
-    // ------------------------------------------------------------
-    // EVENTOS GLOBALES (LOGIN, LOGOUT, BACK, SETTINGS)
-    // ------------------------------------------------------------
-    document.getElementById('btn-login').addEventListener('click', function(e) {
-        e.preventDefault();
-        const user = document.getElementById('usuario').value.trim();
-        const pass = document.getElementById('password').value.trim();
-        const users = load(STORAGE_KEYS.USERS, []);
-        const validUser = users.find(u => u.username === user && u.password === pass);
-        if (validUser) {
-            localStorage.setItem(STORAGE_KEYS.LOGGED_IN, 'true');
-            checkLoggedIn();
-        } else {
-            alert('Credenciales incorrectas. Prueba: Pol Beltran / Polbeltran5');
+            // Go back to previous section
+            const prevScreen = currentScreenEl.getAttribute('data-prev') || 'sistemaModule';
+            showScreen(prevScreen);
         }
     });
+});
 
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-        localStorage.setItem(STORAGE_KEYS.LOGGED_IN, 'false');
-        checkLoggedIn();
+// CITIZENS MODULE
+function loadCitizens() {
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    const container = document.getElementById('citizensList');
+    container.innerHTML = '';
+
+    citizens.forEach(citizen => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">
+                    ${citizen.name}
+                    ${citizen.wanted ? '<span class="alert-badge wanted">BUSCA Y CAPTURA</span>' : ''}
+                    ${citizen.hasRecord ? '<span class="alert-badge" style="background: #FF9800;">ANTECEDENTES</span>' : ''}
+                </div>
+                <div class="list-item-detail">DNI: ${citizen.dni} | Tel: ${citizen.phone}</div>
+            </div>
+            <button onclick="viewCitizen('${citizen.id}')">Ver</button>
+        `;
+        container.appendChild(item);
     });
+}
 
-    backBtn.addEventListener('click', function() {
-        goBack();
+// Search citizens
+document.getElementById('searchCitizens').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    const filtered = citizens.filter(c => 
+        c.name.toLowerCase().includes(query) ||
+        c.dni.toLowerCase().includes(query) ||
+        c.phone.includes(query)
+    );
+
+    const container = document.getElementById('citizensList');
+    container.innerHTML = '';
+
+    filtered.forEach(citizen => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">
+                    ${citizen.name}
+                    ${citizen.wanted ? '<span class="alert-badge wanted">BUSCA Y CAPTURA</span>' : ''}
+                </div>
+                <div class="list-item-detail">DNI: ${citizen.dni} | Tel: ${citizen.phone}</div>
+            </div>
+            <button onclick="viewCitizen('${citizen.id}')">Ver</button>
+        `;
+        container.appendChild(item);
     });
+});
 
-    document.getElementById('settingsBtn').addEventListener('click', function() {
-        renderPage('userManagement');
-    });
+function viewCitizen(id) {
+    currentCitizenId = id;
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    const citizen = citizens.find(c => c.id === id);
 
-    // ------------------------------------------------------------
-    // FUNCIONES DE NAVEGACIÓN
-    // ------------------------------------------------------------
-    function navigateTo(page, params = {}) {
-        navigationStack.push(page);
-        pageParams = params;
-        renderPage(page, params);
+    if (!citizen) return;
+
+    document.getElementById('citizenName').value = citizen.name;
+    document.getElementById('citizenDNI').value = citizen.dni;
+    document.getElementById('citizenPhone').value = citizen.phone;
+    document.getElementById('citizenAddress').value = citizen.address;
+    document.getElementById('citizenNationality').value = citizen.nationality;
+    document.getElementById('citizenJob').value = citizen.job;
+    document.getElementById('citizenRecord').checked = citizen.hasRecord;
+    document.getElementById('citizenRecordText').value = citizen.recordDetails || '';
+    document.getElementById('citizenWanted').checked = citizen.wanted;
+
+    // Show/hide record details
+    document.getElementById('citizenRecordDetails').style.display = citizen.hasRecord ? 'flex' : 'none';
+
+    // Photo
+    if (citizen.photo) {
+        document.getElementById('citizenPhoto').src = citizen.photo;
+    } else {
+        document.getElementById('citizenPhoto').src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect fill='%23ddd' width='150' height='150'/%3E%3Ctext x='50%25' y='50%25' font-size='60' text-anchor='middle' alignment-baseline='middle' fill='%23999'%3E👤%3C/text%3E%3C/svg%3E";
     }
 
-    function goBack() {
-        if (navigationStack.length > 1) {
-            navigationStack.pop();
-            const prev = navigationStack[navigationStack.length - 1];
-            renderPage(prev, {});
-        } else {
-            renderPage('hub');
+    // Vehicle link
+    if (citizen.vehicle) {
+        const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+        const vehicle = vehicles.find(v => v.plate === citizen.vehicle);
+        if (vehicle) {
+            document.getElementById('citizenVehicleLink').innerHTML = `${vehicle.fullName} - ${vehicle.plate}`;
+            document.getElementById('citizenVehicleLink').onclick = () => viewVehicle(vehicle.id);
         }
+    } else {
+        document.getElementById('citizenVehicleLink').innerHTML = 'Ninguno';
+        document.getElementById('citizenVehicleLink').onclick = null;
     }
 
-    // ------------------------------------------------------------
-    // RENDERIZADO DE PÁGINAS
-    // ------------------------------------------------------------
-    function renderPage(page, params = {}) {
-        currentPage = page;
-        pageParams = params;
-        if (!hubScreen.classList.contains('hidden')) {
-            let html = '';
-            headerTitle.innerText = getTitle(page);
-            backBtn.style.visibility = (page === 'hub' || page === 'userManagement' ? 'hidden' : 'visible');
+    showScreen('citizenProfile');
+}
 
-            switch (page) {
-                case 'hub': html = renderHub(); break;
-                case 'citizens': html = renderCitizensList(); break;
-                case 'citizenDetail': html = renderCitizenDetail(params.id); break;
-                case 'vehicles': html = renderVehiclesList(); break;
-                case 'vehicleDetail': html = renderVehicleDetail(params.id); break;
-                case 'createCitizen': html = renderCreateCitizen(); break;
-                case 'system': html = renderSystemHub(); break;
-                case 'cases': html = renderCasesList(); break;
-                case 'createCase': html = renderCreateCase(); break;
-                case 'facial': html = renderFacialRecognition(); break;
-                case 'plate': html = renderPlateRecognition(); break;
-                case 'detenciones': html = renderDetenciones(); break;
-                case 'multas': html = renderMultas(); break;
-                case 'informes': html = renderInformes(); break;
-                case 'evidencias': html = renderEvidencias(); break;
-                case 'ordenes': html = renderOrdenesAlertas(); break;
-                case 'mapa': html = renderMapa(); break;
-                case 'bandas': html = renderBandas(); break;
-                case 'expedientes': html = renderExpedientes(); break;
-                case 'userManagement': html = renderUserManagement(); break;
-                default: html = '<div style="padding:20px; text-align:center;">Página no encontrada</div>';
+// Citizen record checkbox
+document.getElementById('citizenRecord').addEventListener('change', (e) => {
+    document.getElementById('citizenRecordDetails').style.display = e.target.checked ? 'flex' : 'none';
+});
+
+// Save citizen profile
+document.getElementById('saveCitizenProfile').addEventListener('click', () => {
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    const citizen = citizens.find(c => c.id === currentCitizenId);
+
+    if (citizen) {
+        citizen.phone = document.getElementById('citizenPhone').value;
+        citizen.address = document.getElementById('citizenAddress').value;
+        citizen.nationality = document.getElementById('citizenNationality').value;
+        citizen.job = document.getElementById('citizenJob').value;
+        citizen.hasRecord = document.getElementById('citizenRecord').checked;
+        citizen.recordDetails = document.getElementById('citizenRecordText').value;
+        citizen.wanted = document.getElementById('citizenWanted').checked;
+
+        localStorage.setItem('citizens', JSON.stringify(citizens));
+        alert('Perfil actualizado correctamente');
+    }
+});
+
+// Citizen photo
+document.getElementById('citizenPhotoBtn').addEventListener('click', () => {
+    document.getElementById('citizenPhotoInput').click();
+});
+
+document.getElementById('citizenPhotoInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            document.getElementById('citizenPhoto').src = event.target.result;
+            
+            const citizens = JSON.parse(localStorage.getItem('citizens'));
+            const citizen = citizens.find(c => c.id === currentCitizenId);
+            if (citizen) {
+                citizen.photo = event.target.result;
+                localStorage.setItem('citizens', JSON.stringify(citizens));
             }
-            appContent.innerHTML = html;
-            attachPageEvents(page);
-        }
-    }
-
-    function getTitle(page) {
-        const titles = {
-            hub: 'HUB CENTRAL',
-            citizens: 'CIUDADANOS',
-            citizenDetail: 'PERFIL CIUDADANO',
-            vehicles: 'VEHÍCULOS',
-            vehicleDetail: 'FICHA VEHÍCULO',
-            createCitizen: 'ALTA CIUDADANO',
-            system: 'SISTEMA POLICIAL',
-            cases: 'CASOS POLICIALES',
-            createCase: 'NUEVO CASO',
-            facial: 'RECONOCIMIENTO FACIAL',
-            plate: 'RECONOCIMIENTO MATRÍCULAS',
-            detenciones: 'REGISTRO DETENCIONES',
-            multas: 'MULTAS Y SANCIONES',
-            informes: 'INFORMES POLICIALES',
-            evidencias: 'REGISTRO EVIDENCIAS',
-            ordenes: 'ÓRDENES Y ALERTAS',
-            mapa: 'MAPA OPERATIVO',
-            bandas: 'BANDAS CRIMINALES',
-            expedientes: 'EXPEDIENTE AGENTES',
-            userManagement: 'GESTIÓN USUARIOS'
         };
-        return titles[page] || 'MDT · SIPN';
+        reader.readAsDataURL(file);
     }
+});
 
-    // ------------------------------------------------------------
-    // PÁGINA HUB
-    // ------------------------------------------------------------
-    function renderHub() {
-        return `
-            <div class="hub-grid">
-                <div class="hub-card" data-page="citizens">👥 CIUDADANOS</div>
-                <div class="hub-card" data-page="vehicles">🚘 VEHÍCULOS</div>
-                <div class="hub-card" data-page="system">📋 SISTEMA POLICIAL</div>
-                <div class="hub-card" data-page="createCitizen">➕ CREAR CIUDADANO</div>
-            </div>
-            <div style="margin-top:30px; padding:15px; background:#102433; border-radius:40px; text-align:center; color:#91b9d9;">
-                <span>🔒 MDT · UNIDAD 7 · OFICIAL CONECTADO</span>
-            </div>
-        `;
-    }
+// VEHICLES MODULE
+function loadVehicles() {
+    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    const container = document.getElementById('vehiclesList');
+    container.innerHTML = '';
 
-    // ------------------------------------------------------------
-    // MÓDULO CIUDADANOS
-    // ------------------------------------------------------------
-    function renderCitizensList() {
-        const citizens = load(STORAGE_KEYS.CITIZENS, []);
-        let html = `<input type="text" id="searchCitizen" class="search-box" placeholder="🔍 Buscar por nombre, DNI o teléfono">`;
-        html += `<div id="citizen-list-container">`;
-        citizens.forEach(c => {
-            html += `<div class="list-item">
-                        <span><strong>${c.nombre}</strong><br><small>${c.dni} · 📞 ${c.telefono}</small></span>
-                        <button data-id="${c.id}" class="btn-view-citizen">VER</button>
-                    </div>`;
-        });
-        html += `</div>`;
-        return html;
-    }
-
-    function renderCitizenDetail(id) {
-        const citizens = load(STORAGE_KEYS.CITIZENS, []);
-        const citizen = citizens.find(c => c.id === id);
-        if (!citizen) return '<div>Ciudadano no encontrado</div>';
-        return `
-            <div style="padding: 10px">
-                <div style="display:flex; gap:20px; align-items:center; margin-bottom:20px;">
-                    <div style="background:#2b4b65; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem;">👤</div>
-                    <div><h3>${citizen.nombre}</h3></div>
+    vehicles.forEach(vehicle => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">
+                    ${vehicle.fullName}
+                    ${vehicle.stolen ? '<span class="alert-badge stolen">ROBADO</span>' : ''}
                 </div>
-                <div class="profile-field"><label>DNI</label><span>${citizen.dni}</span></div>
-                <div class="profile-field"><label>Teléfono</label><span>${citizen.telefono}</span></div>
-                <div class="profile-field"><label>Dirección</label><span>${citizen.direccion}</span></div>
-                <div class="profile-field"><label>Nacionalidad</label><span>${citizen.nacionalidad}</span></div>
-                <div class="profile-field"><label>Trabajo</label><span>${citizen.trabajo || 'No especificado'}</span></div>
-                <div class="profile-field"><label>Antecedentes</label><span>${citizen.antecedentes ? 'SÍ: ' + citizen.antecedentesDesc : 'NO'}</span></div>
-                <div class="profile-field"><label>Busca y captura</label><span>${citizen.buscaCaptura ? '🚨 SÍ' : '❌ NO'}</span></div>
-                <div class="profile-field"><label>Vehículo asignado</label><span>${citizen.vehiculoAsignado ? '🔗 Enlace a vehículo' : 'Ninguno'}</span></div>
-                <button class="btn-save" data-action="edit-citizen" data-id="${citizen.id}">EDITAR PERFIL</button>
+                <div class="list-item-detail">Matrícula: ${vehicle.plate} | Color: ${vehicle.color}</div>
             </div>
+            <button onclick="viewVehicle('${vehicle.id}')">Ver</button>
         `;
-    }
+        container.appendChild(item);
+    });
+}
 
-    // ------------------------------------------------------------
-    // MÓDULO VEHÍCULOS
-    // ------------------------------------------------------------
-    function renderVehiclesList() {
-        const vehicles = load(STORAGE_KEYS.VEHICLES, []);
-        let html = `<input type="text" id="searchVehicle" class="search-box" placeholder="🔍 Buscar matrícula, marca o modelo">`;
-        html += `<div id="vehicle-list-container">`;
-        vehicles.forEach(v => {
-            html += `<div class="list-item">
-                        <span><strong>${v.marca} ${v.modelo}</strong><br><small>${v.matricula}</small></span>
-                        <button data-id="${v.id}" class="btn-view-vehicle">VER</button>
-                    </div>`;
-        });
-        html += `</div>`;
-        return html;
-    }
+// Search vehicles
+document.getElementById('searchVehicles').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    const filtered = vehicles.filter(v => 
+        v.plate.toLowerCase().includes(query) ||
+        v.brand.toLowerCase().includes(query) ||
+        v.model.toLowerCase().includes(query)
+    );
 
-    function renderVehicleDetail(id) {
-        const vehicles = load(STORAGE_KEYS.VEHICLES, []);
-        const v = vehicles.find(v => v.id === id);
-        if (!v) return '<div>Vehículo no existe</div>';
-        return `
-            <div>
-                <div style="background:#0d2a3b; padding:20px; border-radius:28px;">
-                    <h3>${v.marca} ${v.modelo}</h3>
-                    <div class="profile-field"><label>Matrícula</label><span>${v.matricula}</span></div>
-                    <div class="profile-field"><label>Color</label><span>${v.color}</span></div>
-                    <div class="profile-field"><label>Nº Bastidor</label><span>${v.bastidor}</span></div>
-                    <div class="profile-field"><label>ITV última</label><span>${v.itv}</span></div>
-                    <div class="profile-field"><label>Ubicación</label><span>${v.ubicacion}</span></div>
-                    <div class="profile-field"><label>Robado</label><span>${v.robado ? '🚨 SÍ' : 'NO'}</span></div>
-                    ${v.robado ? `<div class="profile-field"><label>Alerta</label><span>${v.alertaRobo || 'SIN DESCRIPCIÓN'}</span></div>` : ''}
-                    <div class="profile-field"><label>Propietario</label><span>${v.propietarioId ? '🔗 Ver ciudadano' : 'No registrado'}</span></div>
+    const container = document.getElementById('vehiclesList');
+    container.innerHTML = '';
+
+    filtered.forEach(vehicle => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">
+                    ${vehicle.fullName}
+                    ${vehicle.stolen ? '<span class="alert-badge stolen">ROBADO</span>' : ''}
                 </div>
+                <div class="list-item-detail">Matrícula: ${vehicle.plate}</div>
             </div>
+            <button onclick="viewVehicle('${vehicle.id}')">Ver</button>
         `;
+        container.appendChild(item);
+    });
+});
+
+function viewVehicle(id) {
+    currentVehicleId = id;
+    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    const vehicle = vehicles.find(v => v.id === id);
+
+    if (!vehicle) return;
+
+    document.getElementById('vehicleBrand').value = vehicle.fullName;
+    document.getElementById('vehicleColor').value = vehicle.color;
+    document.getElementById('vehiclePlate').value = vehicle.plate;
+    document.getElementById('vehicleVIN').value = vehicle.vin;
+    document.getElementById('vehicleITV').value = vehicle.itv;
+    document.getElementById('vehicleLocation').value = vehicle.location;
+    document.getElementById('vehicleStolen').checked = vehicle.stolen;
+    document.getElementById('vehicleStolenText').value = vehicle.stolenDetails || '';
+
+    document.getElementById('vehicleStolenDetails').style.display = vehicle.stolen ? 'flex' : 'none';
+
+    // Owner link
+    if (vehicle.owner) {
+        const citizens = JSON.parse(localStorage.getItem('citizens'));
+        const owner = citizens.find(c => c.dni === vehicle.owner);
+        if (owner) {
+            document.getElementById('vehicleOwnerLink').innerHTML = owner.name;
+            document.getElementById('vehicleOwnerLink').onclick = () => viewCitizen(owner.id);
+        }
+    } else {
+        document.getElementById('vehicleOwnerLink').innerHTML = 'Desconocido';
+        document.getElementById('vehicleOwnerLink').onclick = null;
     }
 
-    // ------------------------------------------------------------
-    // CREAR CIUDADANO
-    // ------------------------------------------------------------
-    function renderCreateCitizen() {
-        return `
-            <div class="full-form">
-                <h3>➕ Nuevo ciudadano</h3>
-                <input type="file" accept="image/*" id="fotoInput">
-                <input type="text" id="nombreCompleto" placeholder="Nombre completo">
-                <input type="text" id="dniInput" placeholder="DNI">
-                <input type="tel" id="telefonoInput" placeholder="Teléfono">
-                <input type="text" id="direccionInput" placeholder="Dirección">
-                <input type="text" id="nacionalidadInput" placeholder="Nacionalidad" value="Española">
-                <input type="text" id="trabajoInput" placeholder="Trabajo">
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <label>Antecedentes:</label>
-                    <input type="checkbox" id="antecedentesCheck"> <span style="margin-left:5px;">Sí</span>
+    showScreen('vehicleProfile');
+}
+
+// Vehicle stolen checkbox
+document.getElementById('vehicleStolen').addEventListener('change', (e) => {
+    document.getElementById('vehicleStolenDetails').style.display = e.target.checked ? 'flex' : 'none';
+});
+
+// Save vehicle profile
+document.getElementById('saveVehicleProfile').addEventListener('click', () => {
+    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    const vehicle = vehicles.find(v => v.id === currentVehicleId);
+
+    if (vehicle) {
+        vehicle.color = document.getElementById('vehicleColor').value;
+        vehicle.vin = document.getElementById('vehicleVIN').value;
+        vehicle.itv = document.getElementById('vehicleITV').value;
+        vehicle.location = document.getElementById('vehicleLocation').value;
+        vehicle.stolen = document.getElementById('vehicleStolen').checked;
+        vehicle.stolenDetails = document.getElementById('vehicleStolenText').value;
+
+        localStorage.setItem('vehicles', JSON.stringify(vehicles));
+        alert('Perfil actualizado correctamente');
+    }
+});
+
+// CREATE CITIZEN MODULE
+function resetCreateCitizenForm() {
+    document.getElementById('newCitizenName').value = '';
+    document.getElementById('newCitizenDNI').value = '';
+    document.getElementById('newCitizenPhone').value = '';
+    document.getElementById('newCitizenAddress').value = '';
+    document.getElementById('newCitizenNationality').value = 'Española';
+    document.getElementById('newCitizenJob').value = '';
+    document.getElementById('newCitizenRecord').checked = false;
+    document.getElementById('newCitizenRecordText').value = '';
+    document.getElementById('newCitizenWanted').checked = false;
+    document.getElementById('newCitizenVehicle').value = '';
+    document.getElementById('newCitizenPhoto').src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23ddd' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='60' text-anchor='middle' alignment-baseline='middle' fill='%23999'%3E👤%3C/text%3E%3C/svg%3E";
+    document.getElementById('newCitizenRecordDetails').style.display = 'none';
+}
+
+document.getElementById('newCitizenRecord').addEventListener('change', (e) => {
+    document.getElementById('newCitizenRecordDetails').style.display = e.target.checked ? 'flex' : 'none';
+});
+
+document.getElementById('newCitizenPhotoBtn').addEventListener('click', () => {
+    document.getElementById('newCitizenPhotoInput').click();
+});
+
+document.getElementById('newCitizenPhotoInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            document.getElementById('newCitizenPhoto').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+document.getElementById('createCitizenBtn').addEventListener('click', () => {
+    const name = document.getElementById('newCitizenName').value.trim();
+    const dni = document.getElementById('newCitizenDNI').value.trim();
+
+    if (!name || !dni) {
+        alert('Por favor, completa los campos obligatorios (Nombre y DNI)');
+        return;
+    }
+
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    
+    const newCitizen = {
+        id: 'C' + String(citizens.length + 1).padStart(6, '0'),
+        name: name,
+        dni: dni,
+        phone: document.getElementById('newCitizenPhone').value,
+        address: document.getElementById('newCitizenAddress').value,
+        nationality: document.getElementById('newCitizenNationality').value,
+        job: document.getElementById('newCitizenJob').value,
+        hasRecord: document.getElementById('newCitizenRecord').checked,
+        recordDetails: document.getElementById('newCitizenRecordText').value,
+        wanted: document.getElementById('newCitizenWanted').checked,
+        vehicle: document.getElementById('newCitizenVehicle').value || null,
+        photo: document.getElementById('newCitizenPhoto').src.startsWith('data:image/svg') ? null : document.getElementById('newCitizenPhoto').src
+    };
+
+    citizens.push(newCitizen);
+    localStorage.setItem('citizens', JSON.stringify(citizens));
+
+    alert('Ciudadano creado correctamente');
+    resetCreateCitizenForm();
+    showScreen('mainHub');
+});
+
+// SISTEMA POLICIAL MENU
+document.querySelectorAll('#sistemaModule .menu-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const section = btn.getAttribute('data-section');
+        
+        switch(section) {
+            case 'casos':
+                loadCases();
+                showScreen('casosSection');
+                break;
+            case 'reconocimiento-facial':
+                showScreen('reconocimientoFacialSection');
+                break;
+            case 'reconocimiento-matriculas':
+                showScreen('reconocimientoMatriculasSection');
+                break;
+            case 'detenciones':
+                loadDetentions();
+                showScreen('detencionesSection');
+                break;
+            case 'multas':
+                loadMultas();
+                showScreen('multasSection');
+                break;
+            case 'informes':
+                loadReports();
+                showScreen('informesSection');
+                break;
+            case 'evidencias':
+                loadEvidences();
+                showScreen('evidenciasSection');
+                break;
+            case 'alertas':
+                loadAlertas();
+                showScreen('alertasSection');
+                break;
+            case 'mapa':
+                showScreen('mapaSection');
+                break;
+            case 'bandas':
+                loadGangs();
+                showScreen('bandasSection');
+                break;
+            case 'agentes':
+                loadAgentes();
+                showScreen('agentesSection');
+                break;
+            case 'usuarios':
+                loadUsers();
+                showScreen('usuariosSection');
+                break;
+        }
+    });
+});
+
+// CASOS POLICIALES
+function loadCases() {
+    const cases = JSON.parse(localStorage.getItem('cases'));
+    const container = document.getElementById('casesList');
+    container.innerHTML = '';
+
+    cases.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">
+                    ${c.name}
+                    <span class="alert-badge ${c.status === 'Activo' ? 'active' : 'closed'}">${c.status}</span>
                 </div>
-                <textarea id="antecedentesDesc" placeholder="Descripción antecedentes" rows="2"></textarea>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <label>Busca y captura:</label>
-                    <input type="checkbox" id="buscaCheck">
-                </div>
-                <button class="btn-save" id="guardarCiudadanoBtn">GUARDAR CIUDADANO</button>
+                <div class="list-item-detail">${c.description.substring(0, 60)}...</div>
+            </div>
+            <button onclick="editCase('${c.id}')">Ver</button>
+        `;
+        container.appendChild(item);
+    });
+}
+
+document.getElementById('createCaseBtn').addEventListener('click', () => {
+    currentCaseId = null;
+    document.getElementById('caseFormTitle').textContent = 'Crear Caso';
+    document.getElementById('caseName').value = '';
+    document.getElementById('caseDescription').value = '';
+    document.getElementById('caseStatus').value = 'Activo';
+    document.getElementById('deleteCaseBtn').style.display = 'none';
+    showScreen('caseForm');
+});
+
+function editCase(id) {
+    currentCaseId = id;
+    const cases = JSON.parse(localStorage.getItem('cases'));
+    const c = cases.find(case => case.id === id);
+
+    if (c) {
+        document.getElementById('caseFormTitle').textContent = 'Editar Caso';
+        document.getElementById('caseName').value = c.name;
+        document.getElementById('caseDescription').value = c.description;
+        document.getElementById('caseStatus').value = c.status;
+        document.getElementById('deleteCaseBtn').style.display = 'block';
+        showScreen('caseForm');
+    }
+}
+
+document.getElementById('saveCaseBtn').addEventListener('click', () => {
+    const name = document.getElementById('caseName').value.trim();
+    const description = document.getElementById('caseDescription').value.trim();
+    const status = document.getElementById('caseStatus').value;
+
+    if (!name) {
+        alert('Por favor, introduce un nombre para el caso');
+        return;
+    }
+
+    const cases = JSON.parse(localStorage.getItem('cases'));
+
+    if (currentCaseId) {
+        const c = cases.find(case => case.id === currentCaseId);
+        if (c) {
+            c.name = name;
+            c.description = description;
+            c.status = status;
+        }
+    } else {
+        const newCase = {
+            id: 'CASE' + String(cases.length + 1).padStart(4, '0'),
+            name: name,
+            description: description,
+            status: status,
+            date: new Date().toISOString()
+        };
+        cases.push(newCase);
+    }
+
+    localStorage.setItem('cases', JSON.stringify(cases));
+    alert('Caso guardado correctamente');
+    loadCases();
+    showScreen('casosSection');
+});
+
+document.getElementById('deleteCaseBtn').addEventListener('click', () => {
+    if (confirm('¿Estás seguro de eliminar este caso?')) {
+        const cases = JSON.parse(localStorage.getItem('cases'));
+        const filtered = cases.filter(c => c.id !== currentCaseId);
+        localStorage.setItem('cases', JSON.stringify(filtered));
+        alert('Caso eliminado');
+        loadCases();
+        showScreen('casosSection');
+    }
+});
+
+// RECONOCIMIENTO FACIAL
+document.getElementById('scanFaceBtn').addEventListener('click', () => {
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    const randomCitizen = citizens[Math.floor(Math.random() * citizens.length)];
+    
+    const result = document.getElementById('faceResult');
+    result.innerHTML = `
+        <h3>✅ Coincidencia Encontrada</h3>
+        <div class="list-item" style="margin-top: 15px;">
+            <div class="list-item-info">
+                <div class="list-item-name">${randomCitizen.name}</div>
+                <div class="list-item-detail">DNI: ${randomCitizen.dni}</div>
+            </div>
+            <button onclick="viewCitizen('${randomCitizen.id}')">Ver Perfil</button>
+        </div>
+    `;
+});
+
+// RECONOCIMIENTO MATRICULAS
+document.getElementById('scanPlateBtn').addEventListener('click', () => {
+    const vehicles = JSON.parse(localStorage.getItem('vehicles'));
+    const randomVehicle = vehicles[Math.floor(Math.random() * vehicles.length)];
+    
+    const result = document.getElementById('plateResult');
+    result.innerHTML = `
+        <h3>✅ Matrícula Identificada</h3>
+        <div class="list-item" style="margin-top: 15px;">
+            <div class="list-item-info">
+                <div class="list-item-name">${randomVehicle.fullName}</div>
+                <div class="list-item-detail">Matrícula: ${randomVehicle.plate}</div>
+            </div>
+            <button onclick="viewVehicle('${randomVehicle.id}')">Ver Perfil</button>
+        </div>
+    `;
+});
+
+// DETENCIONES
+function loadDetentions() {
+    const detentions = JSON.parse(localStorage.getItem('detentions'));
+    const container = document.getElementById('detentionsList');
+    container.innerHTML = '';
+
+    detentions.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">${d.citizenName}</div>
+                <div class="list-item-detail">${d.reason.substring(0, 60)}...</div>
             </div>
         `;
+        container.appendChild(item);
+    });
+}
+
+document.getElementById('createDetentionBtn').addEventListener('click', () => {
+    document.getElementById('detentionCitizen').value = '';
+    document.getElementById('detentionReason').value = '';
+    document.getElementById('detentionTime').value = '24';
+    document.getElementById('detentionAgents').value = currentUser.username;
+    showScreen('detentionForm');
+});
+
+// Search citizen for detention
+document.getElementById('detentionCitizen').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    if (query.length < 2) {
+        document.getElementById('detentionCitizenResults').innerHTML = '';
+        return;
     }
 
-    // ------------------------------------------------------------
-    // SISTEMA POLICIAL (SUBMENÚ)
-    // ------------------------------------------------------------
-    function renderSystemHub() {
-        return `
-            <div style="display:flex; flex-direction:column; gap:16px;">
-                <div class="list-item" data-page="cases">📁 CASOS POLICIALES <button>></button></div>
-                <div class="list-item" data-page="facial">😐 RECONOCIMIENTO FACIAL <button>></button></div>
-                <div class="list-item" data-page="plate">🪪 RECONOCIMIENTO MATRÍCULAS <button>></button></div>
-                <div style="margin-top:20px; font-weight:bold;">OPERATIVA DIARIA</div>
-                <div class="list-item" data-page="detenciones">🚔 REGISTRO DETENCIONES <button>></button></div>
-                <div class="list-item" data-page="multas">📝 MULTAS Y SANCIONES <button>></button></div>
-                <div class="list-item" data-page="informes">📄 INFORMES POLICIALES <button>></button></div>
-                <div class="list-item" data-page="evidencias">📎 REGISTRO EVIDENCIAS <button>></button></div>
-                <div style="margin-top:20px; font-weight:bold;">INTELIGENCIA Y SEGURIDAD</div>
-                <div class="list-item" data-page="ordenes">⚠️ ÓRDENES Y ALERTAS <button>></button></div>
-                <div class="list-item" data-page="mapa">🗺️ MAPA OPERATIVO <button>></button></div>
-                <div class="list-item" data-page="bandas">🕵️ BANDAS CRIMINALES <button>></button></div>
-                <div style="margin-top:20px; font-weight:bold;">GESTIÓN DEPARTAMENTO</div>
-                <div class="list-item" data-page="expedientes">📋 EXPEDIENTE AGENTES <button>></button></div>
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    const filtered = citizens.filter(c => 
+        c.name.toLowerCase().includes(query) ||
+        c.dni.toLowerCase().includes(query)
+    ).slice(0, 5);
+
+    const results = document.getElementById('detentionCitizenResults');
+    results.innerHTML = '';
+    
+    filtered.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.textContent = `${c.name} - ${c.dni}`;
+        item.onclick = () => {
+            document.getElementById('detentionCitizen').value = c.name;
+            document.getElementById('detentionCitizen').dataset.citizenId = c.id;
+            results.innerHTML = '';
+        };
+        results.appendChild(item);
+    });
+});
+
+document.getElementById('saveDetentionBtn').addEventListener('click', () => {
+    const citizenName = document.getElementById('detentionCitizen').value;
+    const reason = document.getElementById('detentionReason').value;
+
+    if (!citizenName || !reason) {
+        alert('Por favor, completa todos los campos obligatorios');
+        return;
+    }
+
+    const detentions = JSON.parse(localStorage.getItem('detentions'));
+    
+    const newDetention = {
+        id: 'DET' + String(detentions.length + 1).padStart(4, '0'),
+        citizenName: citizenName,
+        reason: reason,
+        time: document.getElementById('detentionTime').value,
+        agents: document.getElementById('detentionAgents').value,
+        date: new Date().toISOString()
+    };
+
+    detentions.push(newDetention);
+    localStorage.setItem('detentions', JSON.stringify(detentions));
+
+    alert('Detención registrada correctamente');
+    loadDetentions();
+    showScreen('detencionesSection');
+});
+
+// MULTAS
+function loadMultas() {
+    const multas = JSON.parse(localStorage.getItem('multas'));
+    const container = document.getElementById('multasList');
+    container.innerHTML = '';
+
+    multas.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">${m.citizenName} - ${m.amount}€</div>
+                <div class="list-item-detail">${m.type}</div>
             </div>
         `;
+        container.appendChild(item);
+    });
+}
+
+document.getElementById('createMultaBtn').addEventListener('click', () => {
+    document.getElementById('multaCitizen').value = '';
+    document.getElementById('multaVehicle').value = '';
+    document.getElementById('multaType').value = '';
+    document.getElementById('multaAmount').value = '';
+    document.getElementById('multaDescription').value = '';
+    document.getElementById('multaDate').value = new Date().toISOString().slice(0, 16);
+    document.getElementById('multaAgent').value = currentUser.username;
+    showScreen('multaForm');
+});
+
+// Multa type change
+document.getElementById('multaType').addEventListener('change', (e) => {
+    const selected = e.target.selectedOptions[0];
+    const amount = selected.getAttribute('data-amount');
+    document.getElementById('multaAmount').value = amount;
+});
+
+// Search citizen for multa
+document.getElementById('multaCitizen').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    if (query.length < 2) {
+        document.getElementById('multaCitizenResults').innerHTML = '';
+        return;
     }
 
-    // ------------------------------------------------------------
-    // CASOS POLICIALES
-    // ------------------------------------------------------------
-    function renderCasesList() {
-        const casos = load(STORAGE_KEYS.CASES, []);
-        let html = `<button class="btn-save" id="nuevoCasoBtn" style="background:#0d5470;">+ CREAR CASO</button>`;
-        if (casos.length === 0) {
-            html += `<div style="text-align:center; padding:30px; color:#8ab3cf;">No hay casos registrados.</div>`;
-        } else {
-            casos.forEach(c => {
-                html += `<div class="list-item">${c.nombre} · ${c.estado || 'Activo'}<button data-id="${c.id}">EDITAR</button></div>`;
-            });
-        }
-        return html;
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    const filtered = citizens.filter(c => 
+        c.name.toLowerCase().includes(query) ||
+        c.dni.toLowerCase().includes(query)
+    ).slice(0, 5);
+
+    const results = document.getElementById('multaCitizenResults');
+    results.innerHTML = '';
+    
+    filtered.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.textContent = `${c.name} - ${c.dni}`;
+        item.onclick = () => {
+            document.getElementById('multaCitizen').value = c.name;
+            results.innerHTML = '';
+        };
+        results.appendChild(item);
+    });
+});
+
+document.getElementById('saveMultaBtn').addEventListener('click', () => {
+    const citizenName = document.getElementById('multaCitizen').value;
+    const type = document.getElementById('multaType').value;
+    const amount = document.getElementById('multaAmount').value;
+
+    if (!citizenName || !type || !amount) {
+        alert('Por favor, completa todos los campos obligatorios');
+        return;
     }
 
-    function renderCreateCase() {
-        return `<div class="full-form"><h3>Nuevo caso</h3><input placeholder="Nombre del caso"><textarea placeholder="Descripción"></textarea><input type="file"> <button class="btn-save">GUARDAR CASO</button></div>`;
+    const multas = JSON.parse(localStorage.getItem('multas'));
+    
+    const newMulta = {
+        id: 'MULTA' + String(multas.length + 1).padStart(4, '0'),
+        citizenName: citizenName,
+        vehicle: document.getElementById('multaVehicle').value,
+        type: type,
+        amount: amount,
+        description: document.getElementById('multaDescription').value,
+        date: document.getElementById('multaDate').value,
+        agent: document.getElementById('multaAgent').value
+    };
+
+    multas.push(newMulta);
+    localStorage.setItem('multas', JSON.stringify(multas));
+
+    alert('Multa generada correctamente');
+    loadMultas();
+    showScreen('multasSection');
+});
+
+// INFORMES
+function loadReports() {
+    const reports = JSON.parse(localStorage.getItem('reports'));
+    const container = document.getElementById('reportsList');
+    container.innerHTML = '';
+
+    reports.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">${r.type}</div>
+                <div class="list-item-detail">${r.location} - ${new Date(r.date).toLocaleDateString()}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+document.querySelectorAll('#informesSection .menu-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const reportType = btn.getAttribute('data-report');
+        document.getElementById('reportFormTitle').textContent = `Nuevo Informe de ${reportType.charAt(0).toUpperCase() + reportType.slice(1)}`;
+        document.getElementById('reportForm').dataset.reportType = reportType;
+        document.getElementById('reportDate').value = new Date().toISOString().slice(0, 16);
+        document.getElementById('reportLocation').value = '';
+        document.getElementById('reportDescription').value = '';
+        document.getElementById('reportAgents').value = currentUser.username;
+        document.getElementById('reportPeople').value = '';
+        document.getElementById('reportNotes').value = '';
+        showScreen('reportForm');
+    });
+});
+
+document.getElementById('saveReportBtn').addEventListener('click', () => {
+    const description = document.getElementById('reportDescription').value;
+
+    if (!description) {
+        alert('Por favor, completa la descripción del suceso');
+        return;
     }
 
-    // ------------------------------------------------------------
-    // RECONOCIMIENTO FACIAL Y MATRÍCULAS (SIMULACIÓN)
-    // ------------------------------------------------------------
-    function renderFacialRecognition() {
-        return `<div class="camera-mock">📷 CÁMARA FACIAL (SIMULACIÓN)<br><button id="simularFacial" class="btn-save" style="background: #1f5e7a;">IDENTIFICAR PERSONA</button><div id="facialResult"></div></div>`;
+    const reports = JSON.parse(localStorage.getItem('reports'));
+    const reportType = document.getElementById('reportForm').dataset.reportType;
+    
+    const newReport = {
+        id: 'REP' + String(reports.length + 1).padStart(4, '0'),
+        type: reportType,
+        date: document.getElementById('reportDate').value,
+        location: document.getElementById('reportLocation').value,
+        description: description,
+        agents: document.getElementById('reportAgents').value,
+        people: document.getElementById('reportPeople').value,
+        notes: document.getElementById('reportNotes').value
+    };
+
+    reports.push(newReport);
+    localStorage.setItem('reports', JSON.stringify(reports));
+
+    alert('Informe guardado correctamente');
+    loadReports();
+    showScreen('informesSection');
+});
+
+// EVIDENCIAS
+function loadEvidences() {
+    const evidences = JSON.parse(localStorage.getItem('evidences'));
+    const container = document.getElementById('evidencesList');
+    container.innerHTML = '';
+
+    // Populate case select
+    const cases = JSON.parse(localStorage.getItem('cases'));
+    const caseSelect = document.getElementById('evidenceCase');
+    caseSelect.innerHTML = '<option value="">Seleccionar caso...</option>';
+    cases.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.textContent = c.name;
+        caseSelect.appendChild(option);
+    });
+
+    evidences.forEach(e => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">${e.type} - Caso ${e.caseId}</div>
+                <div class="list-item-detail">${e.description.substring(0, 60)}...</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+document.getElementById('createEvidenceBtn').addEventListener('click', () => {
+    document.getElementById('evidenceCase').value = '';
+    document.getElementById('evidenceType').value = 'Fotografía';
+    document.getElementById('evidenceDescription').value = '';
+    document.getElementById('evidenceCustody').value = '';
+    showScreen('evidenceForm');
+});
+
+document.getElementById('saveEvidenceBtn').addEventListener('click', () => {
+    const caseId = document.getElementById('evidenceCase').value;
+    const description = document.getElementById('evidenceDescription').value;
+
+    if (!caseId || !description) {
+        alert('Por favor, completa los campos obligatorios');
+        return;
     }
 
-    function renderPlateRecognition() {
-        return `<div class="camera-mock">📸 LECTOR MATRÍCULAS<br><button id="simularPlaca" class="btn-save">CAPTURAR MATRÍCULA</button><div id="plateResult"></div></div>`;
+    const evidences = JSON.parse(localStorage.getItem('evidences'));
+    
+    const newEvidence = {
+        id: 'EV' + String(evidences.length + 1).padStart(4, '0'),
+        caseId: caseId,
+        type: document.getElementById('evidenceType').value,
+        description: description,
+        custody: document.getElementById('evidenceCustody').value,
+        date: new Date().toISOString()
+    };
+
+    evidences.push(newEvidence);
+    localStorage.setItem('evidences', JSON.stringify(evidences));
+
+    alert('Evidencia registrada correctamente');
+    loadEvidences();
+    showScreen('evidenciasSection');
+});
+
+// ALERTAS
+function loadAlertas() {
+    loadAlertTab('buscados');
+}
+
+document.querySelectorAll('#alertasSection .tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('#alertasSection .tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadAlertTab(btn.getAttribute('data-tab'));
+    });
+});
+
+function loadAlertTab(tab) {
+    const container = document.getElementById('alertsContent');
+    const citizens = JSON.parse(localStorage.getItem('citizens'));
+    
+    switch(tab) {
+        case 'buscados':
+            const wanted = citizens.filter(c => c.wanted);
+            container.innerHTML = '<h3>Personas Buscadas</h3>';
+            wanted.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="list-item-info">
+                        <div class="list-item-name">${c.name}</div>
+                        <div class="list-item-detail">DNI: ${c.dni}</div>
+                    </div>
+                    <button onclick="viewCitizen('${c.id}')">Ver</button>
+                `;
+                container.appendChild(item);
+            });
+            break;
+        case 'ordenes':
+            container.innerHTML = '<h3>Órdenes de Arresto</h3><p style="color: #aaa; padding: 20px;">No hay órdenes activas</p>';
+            break;
+        case 'desaparecidos':
+            container.innerHTML = '<h3>Personas Desaparecidas</h3><p style="color: #aaa; padding: 20px;">No hay desaparecidos registrados</p>';
+            break;
+        case 'bolo':
+            container.innerHTML = '<h3>Alertas BOLO (Be On the Look Out)</h3><p style="color: #aaa; padding: 20px;">No hay alertas BOLO activas</p>';
+            break;
+    }
+}
+
+// BANDAS
+function loadGangs() {
+    const gangs = JSON.parse(localStorage.getItem('gangs'));
+    const container = document.getElementById('gangsList');
+    container.innerHTML = '';
+
+    gangs.forEach(g => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">${g.name}</div>
+                <div class="list-item-detail">Peligrosidad: ${g.danger}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+document.getElementById('createGangBtn').addEventListener('click', () => {
+    document.getElementById('gangName').value = '';
+    document.getElementById('gangActivities').value = '';
+    document.getElementById('gangMembers').value = '';
+    document.getElementById('gangRelations').value = '';
+    document.getElementById('gangDanger').value = 'Medio';
+    showScreen('gangForm');
+});
+
+document.getElementById('saveGangBtn').addEventListener('click', () => {
+    const name = document.getElementById('gangName').value.trim();
+
+    if (!name) {
+        alert('Por favor, introduce un nombre para la banda');
+        return;
     }
 
-    // ------------------------------------------------------------
-    // OPERATIVA DIARIA (MOCKUPS FUNCIONALES)
-    // ------------------------------------------------------------
-    function renderDetenciones() {
-        return `<h3>Registro detenciones</h3><div class="full-form"><input placeholder="Motivo"><textarea placeholder="Lectura de derechos automática"></textarea><input placeholder="Tiempo custodia (min)"><button class="btn-save">REGISTRAR DETENCIÓN</button></div>`;
+    const gangs = JSON.parse(localStorage.getItem('gangs'));
+    
+    const newGang = {
+        id: 'GANG' + String(gangs.length + 1).padStart(3, '0'),
+        name: name,
+        activities: document.getElementById('gangActivities').value,
+        members: document.getElementById('gangMembers').value,
+        relations: document.getElementById('gangRelations').value,
+        danger: document.getElementById('gangDanger').value
+    };
+
+    gangs.push(newGang);
+    localStorage.setItem('gangs', JSON.stringify(gangs));
+
+    alert('Banda guardada correctamente');
+    loadGangs();
+    showScreen('bandasSection');
+});
+
+// AGENTES
+function loadAgentes() {
+    loadAgentTab('rangos');
+}
+
+document.querySelectorAll('#agentesSection .tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('#agentesSection .tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadAgentTab(btn.getAttribute('data-tab'));
+    });
+});
+
+function loadAgentTab(tab) {
+    const container = document.getElementById('agentesContent');
+    const users = JSON.parse(localStorage.getItem('users'));
+    
+    switch(tab) {
+        case 'rangos':
+            container.innerHTML = '<h3>Rangos de Agentes</h3>';
+            users.forEach(u => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="list-item-info">
+                        <div class="list-item-name">${u.username}</div>
+                        <div class="list-item-detail">Rango: ${u.rank}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            break;
+        case 'sanciones':
+            container.innerHTML = '<h3>Sanciones Internas</h3><p style="color: #aaa; padding: 20px;">No hay sanciones registradas</p>';
+            break;
+        case 'condecoraciones':
+            container.innerHTML = '<h3>Condecoraciones</h3><p style="color: #aaa; padding: 20px;">No hay condecoraciones registradas</p>';
+            break;
+        case 'historial':
+            container.innerHTML = '<h3>Historial de Servicio</h3><p style="color: #aaa; padding: 20px;">Consultar historial individual</p>';
+            break;
     }
-    function renderMultas() {
-        return `<h3>Generar multa</h3><div class="full-form"><input placeholder="Ciudadano (DNI o nombre)"><input placeholder="Vehículo matrícula"><select><option>Exceso velocidad</option><option>Semáforo</option></select><input placeholder="Importe automático" value="150€"><button class="btn-save">GENERAR DENUNCIA</button></div>`;
-    }
-    function renderInformes() {
-        return `<h3>Plantillas informe</h3><div class="list-item">Intervención</div><div class="list-item">Patrulla</div><div class="list-item">Incidente</div>`;
-    }
-    function renderEvidencias() {
-        return `<h3>Subir evidencia</h3><input type="file" multiple><input placeholder="Etiquetar caso"><button class="btn-save">SUBIR Y CUSTODIAR</button>`;
+}
+
+// USUARIOS
+function loadUsers() {
+    const users = JSON.parse(localStorage.getItem('users'));
+    const container = document.getElementById('usersList');
+    container.innerHTML = '';
+
+    users.forEach(u => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+            <div class="list-item-info">
+                <div class="list-item-name">${u.username}</div>
+                <div class="list-item-detail">Rango: ${u.rank}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+document.getElementById('createUserBtn').addEventListener('click', () => {
+    document.getElementById('newUsername').value = '';
+    document.getElementById('newUserPassword').value = '';
+    document.getElementById('newUserRank').value = 'Agente';
+    showScreen('userForm');
+});
+
+document.getElementById('saveUserBtn').addEventListener('click', () => {
+    const username = document.getElementById('newUsername').value.trim();
+    const password = document.getElementById('newUserPassword').value;
+
+    if (!username || !password) {
+        alert('Por favor, completa todos los campos');
+        return;
     }
 
-    // ------------------------------------------------------------
-    // INTELIGENCIA Y SEGURIDAD (MOCKUPS)
-    // ------------------------------------------------------------
-    function renderOrdenesAlertas() { return `<h3>Órdenes de arresto / BOLO</h3><p>Personas buscadas: 3 · Desaparecidos: 1</p>`; }
-    function renderMapa() { return `<div style="background:#1f3c4a; padding:30px; border-radius:20px;">🗺️ Mapa operativo (incidentes activos, patrullas, hotspots) — SIMULACIÓN</div>`; }
-    function renderBandas() { return `<h3>Bandas criminales</h3><div>Los Malditos · Miembros: 12</div>`; }
-    function renderExpedientes() { return `<h3>Expediente de agentes</h3><div>Rangos · Sanciones · Condecoraciones</div>`; }
+    const users = JSON.parse(localStorage.getItem('users'));
+    
+    const newUser = {
+        username: username,
+        password: password,
+        rank: document.getElementById('newUserRank').value
+    };
 
-    // ------------------------------------------------------------
-    // GESTIÓN DE USUARIOS (AJUSTES)
-    // ------------------------------------------------------------
-    function renderUserManagement() {
-        const users = load(STORAGE_KEYS.USERS, []);
-        let html = `<h3>👮 Gestión de usuarios</h3><div class="full-form"><input id="newUsername" placeholder="Usuario"><input id="newPassword" placeholder="Contraseña"><input id="newRank" placeholder="Rango"><button id="crearUsuarioBtn" class="btn-save">CREAR USUARIO</button></div><hr>`;
-        users.forEach(u => html += `<div class="list-item">${u.username} · ${u.rank || 'Oficial'} <button data-id="${u.id}">Editar</button></div>`);
-        return html;
-    }
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
 
-    // ------------------------------------------------------------
-    // ASIGNACIÓN DE EVENTOS DINÁMICOS
-    // ------------------------------------------------------------
-    function attachPageEvents(page) {
-        // HUB
-        if (page === 'hub') {
-            document.querySelectorAll('.hub-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                    const pageDest = this.dataset.page;
-                    navigateTo(pageDest);
-                });
-            });
-        }
-        // Lista de ciudadanos
-        if (page === 'citizens') {
-            document.querySelectorAll('.btn-view-citizen').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    const id = e.currentTarget.dataset.id;
-                    navigateTo('citizenDetail', { id });
-                });
-            });
-        }
-        // Lista de vehículos
-        if (page === 'vehicles') {
-            document.querySelectorAll('.btn-view-vehicle').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    const id = e.currentTarget.dataset.id;
-                    navigateTo('vehicleDetail', { id });
-                });
-            });
-        }
-        // Crear ciudadano (simulado)
-        if (page === 'createCitizen') {
-            document.getElementById('guardarCiudadanoBtn')?.addEventListener('click', function() {
-                alert('Funcionalidad guardar ciudadano completada (simulación). En MDT real se almacena en localStorage.');
-                // Aquí se puede implementar la lógica real de guardado
-            });
-        }
-        // Sistema policial (submenú)
-        if (page === 'system') {
-            document.querySelectorAll('.list-item[data-page]').forEach(el => {
-                el.addEventListener('click', function(e) {
-                    const dest = this.dataset.page;
-                    navigateTo(dest);
-                });
-            });
-        }
-        // Reconocimiento facial
-        if (page === 'facial') {
-            document.getElementById('simularFacial')?.addEventListener('click', function() {
-                const citizens = load(STORAGE_KEYS.CITIZENS, []);
-                const random = citizens[Math.floor(Math.random() * citizens.length)];
-                document.getElementById('facialResult').innerHTML = `✅ Match: ${random.nombre} <button data-id="${random.id}" class="btn-view-citizen">VER PERFIL</button>`;
-                document.querySelector('#facialResult .btn-view-citizen')?.addEventListener('click', function(){
-                    navigateTo('citizenDetail', { id: random.id });
-                });
-            });
-        }
-        // Reconocimiento de matrículas
-        if (page === 'plate') {
-            document.getElementById('simularPlaca')?.addEventListener('click', function() {
-                const vehicles = load(STORAGE_KEYS.VEHICLES, []);
-                const random = vehicles[Math.floor(Math.random() * vehicles.length)];
-                document.getElementById('plateResult').innerHTML = `✅ Matrícula: ${random.matricula} · ${random.marca} ${random.modelo} <button data-id="${random.id}" class="btn-view-vehicle">VER VEHÍCULO</button>`;
-                document.querySelector('#plateResult .btn-view-vehicle')?.addEventListener('click', function(){
-                    navigateTo('vehicleDetail', { id: random.id });
-                });
-            });
-        }
-        // Gestión de usuarios
-        if (page === 'userManagement') {
-            document.getElementById('crearUsuarioBtn')?.addEventListener('click', function(){
-                const users = load(STORAGE_KEYS.USERS, []);
-                const newU = {
-                    id: 'u' + Date.now(),
-                    username: document.getElementById('newUsername').value,
-                    password: document.getElementById('newPassword').value,
-                    rank: document.getElementById('newRank').value
-                };
-                users.push(newU);
-                save(STORAGE_KEYS.USERS, users);
-                alert('✅ Usuario creado correctamente');
-                renderPage('userManagement');
-            });
-        }
-    }
+    alert('Usuario creado correctamente');
+    loadUsers();
+    showScreen('usuariosSection');
+});
 
-    // ------------------------------------------------------------
-    // ARRANQUE DE LA APLICACIÓN
-    // ------------------------------------------------------------
-    initializeDatabase();
-    checkLoggedIn();
-})();
+// INITIALIZE APP
+initializeData();

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPN - Sistema Integrado Policial Nacional</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="logo-container">
+                <div class="logo-placeholder">🚓</div>
+            </div>
+            <h1 class="login-title">SIPN</h1>
+            <p class="login-subtitle">Sistema Integrado Policial Nacional</p>
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="loginUsername">Usuario</label>
+                    <input type="text" id="loginUsername" placeholder="Introduce tu usuario">
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="Introduce tu contraseña">
+                </div>
+                <button id="loginButton" class="btn btn-primary">Entrar</button>
+                <div id="loginError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN HUB -->
+    <div id="mainHub" class="screen">
+        <div class="hub-container">
+            <div class="hub-header">
+                <h2>SIPN</h2>
+                <button id="logoutButton" class="btn-logout">Cerrar Sesión</button>
+            </div>
+            <div class="hub-grid">
+                <button class="hub-button" data-module="ciudadanos">
+                    <span class="hub-icon">👤</span>
+                    <span class="hub-text">Ciudadanos</span>
+                </button>
+                <button class="hub-button" data-module="vehiculos">
+                    <span class="hub-icon">🚗</span>
+                    <span class="hub-text">Vehículos</span>
+                </button>
+                <button class="hub-button" data-module="sistema">
+                    <span class="hub-icon">⚙️</span>
+                    <span class="hub-text">Sistema Policial</span>
+                </button>
+                <button class="hub-button" data-module="crear-ciudadano">
+                    <span class="hub-icon">➕</span>
+                    <span class="hub-text">Crear Ciudadano</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CIUDADANOS MODULE -->
+    <div id="ciudadanosModule" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Ciudadanos</h2>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchCitizens" placeholder="Buscar por nombre, DNI o teléfono...">
+        </div>
+        <div id="citizensList" class="list-container"></div>
+    </div>
+
+    <!-- CITIZEN PROFILE -->
+    <div id="citizenProfile" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Perfil de Ciudadano</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-photo">
+                <img id="citizenPhoto" src="" alt="Foto">
+                <input type="file" id="citizenPhotoInput" accept="image/*" style="display: none;">
+                <button id="citizenPhotoBtn" class="btn btn-secondary">Cambiar Foto</button>
+            </div>
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="citizenName" readonly>
+                </div>
+                <div class="field-group">
+                    <label>DNI</label>
+                    <input type="text" id="citizenDNI" readonly>
+                </div>
+                <div class="field-group">
+                    <label>Teléfono</label>
+                    <input type="text" id="citizenPhone">
+                </div>
+                <div class="field-group">
+                    <label>Dirección</label>
+                    <input type="text" id="citizenAddress">
+                </div>
+                <div class="field-group">
+                    <label>Nacionalidad</label>
+                    <input type="text" id="citizenNationality">
+                </div>
+                <div class="field-group">
+                    <label>Trabajo</label>
+                    <input type="text" id="citizenJob">
+                </div>
+                <div class="field-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="citizenRecord">
+                        Antecedentes Penales
+                    </label>
+                </div>
+                <div class="field-group" id="citizenRecordDetails" style="display: none;">
+                    <label>Descripción de Antecedentes</label>
+                    <textarea id="citizenRecordText" rows="3"></textarea>
+                </div>
+                <div class="field-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="citizenWanted">
+                        Busca y Captura
+                    </label>
+                </div>
+                <div class="field-group">
+                    <label>Vehículo Asignado</label>
+                    <div id="citizenVehicleLink" class="link-field">Ninguno</div>
+                </div>
+                <button id="saveCitizenProfile" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VEHICULOS MODULE -->
+    <div id="vehiculosModule" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Vehículos</h2>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchVehicles" placeholder="Buscar por matrícula, marca o modelo...">
+        </div>
+        <div id="vehiclesList" class="list-container"></div>
+    </div>
+
+    <!-- VEHICLE PROFILE -->
+    <div id="vehicleProfile" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Perfil de Vehículo</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Marca y Modelo</label>
+                    <input type="text" id="vehicleBrand" readonly>
+                </div>
+                <div class="field-group">
+                    <label>Color</label>
+                    <input type="text" id="vehicleColor">
+                </div>
+                <div class="field-group">
+                    <label>Matrícula</label>
+                    <input type="text" id="vehiclePlate" readonly>
+                </div>
+                <div class="field-group">
+                    <label>Nº Bastidor</label>
+                    <input type="text" id="vehicleVIN">
+                </div>
+                <div class="field-group">
+                    <label>ITV Última Fecha</label>
+                    <input type="date" id="vehicleITV">
+                </div>
+                <div class="field-group">
+                    <label>Ubicación Registrada</label>
+                    <input type="text" id="vehicleLocation">
+                </div>
+                <div class="field-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="vehicleStolen">
+                        Vehículo Robado
+                    </label>
+                </div>
+                <div class="field-group" id="vehicleStolenDetails" style="display: none;">
+                    <label>Detalles del Robo</label>
+                    <textarea id="vehicleStolenText" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Propietario</label>
+                    <div id="vehicleOwnerLink" class="link-field">Desconocido</div>
+                </div>
+                <button id="saveVehicleProfile" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREAR CIUDADANO MODULE -->
+    <div id="crearCiudadanoModule" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Crear Nuevo Ciudadano</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-photo">
+                <img id="newCitizenPhoto" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23ddd' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' font-size='60' text-anchor='middle' alignment-baseline='middle' fill='%23999'%3E👤%3C/text%3E%3C/svg%3E" alt="Foto">
+                <input type="file" id="newCitizenPhotoInput" accept="image/*" style="display: none;">
+                <button id="newCitizenPhotoBtn" class="btn btn-secondary">Subir Foto</button>
+            </div>
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Nombre Completo *</label>
+                    <input type="text" id="newCitizenName" required>
+                </div>
+                <div class="field-group">
+                    <label>DNI *</label>
+                    <input type="text" id="newCitizenDNI" required>
+                </div>
+                <div class="field-group">
+                    <label>Teléfono</label>
+                    <input type="text" id="newCitizenPhone">
+                </div>
+                <div class="field-group">
+                    <label>Dirección</label>
+                    <input type="text" id="newCitizenAddress">
+                </div>
+                <div class="field-group">
+                    <label>Nacionalidad</label>
+                    <input type="text" id="newCitizenNationality" value="Española">
+                </div>
+                <div class="field-group">
+                    <label>Trabajo</label>
+                    <input type="text" id="newCitizenJob">
+                </div>
+                <div class="field-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="newCitizenRecord">
+                        Antecedentes Penales
+                    </label>
+                </div>
+                <div class="field-group" id="newCitizenRecordDetails" style="display: none;">
+                    <label>Descripción de Antecedentes</label>
+                    <textarea id="newCitizenRecordText" rows="3"></textarea>
+                </div>
+                <div class="field-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="newCitizenWanted">
+                        Busca y Captura
+                    </label>
+                </div>
+                <div class="field-group">
+                    <label>Vehículo Asignado (Matrícula)</label>
+                    <input type="text" id="newCitizenVehicle" placeholder="Opcional">
+                </div>
+                <button id="createCitizenBtn" class="btn btn-primary">Crear Ciudadano</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SISTEMA POLICIAL MODULE -->
+    <div id="sistemaModule" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Sistema Policial</h2>
+        </div>
+        <div class="menu-grid">
+            <button class="menu-item" data-section="casos">
+                <span class="menu-icon">📋</span>
+                <span>Casos Policiales</span>
+            </button>
+            <button class="menu-item" data-section="reconocimiento-facial">
+                <span class="menu-icon">📷</span>
+                <span>Reconocimiento Facial</span>
+            </button>
+            <button class="menu-item" data-section="reconocimiento-matriculas">
+                <span class="menu-icon">🎥</span>
+                <span>Reconocimiento Matrículas</span>
+            </button>
+            <button class="menu-item" data-section="detenciones">
+                <span class="menu-icon">🚔</span>
+                <span>Registro Detenciones</span>
+            </button>
+            <button class="menu-item" data-section="multas">
+                <span class="menu-icon">📝</span>
+                <span>Multas y Sanciones</span>
+            </button>
+            <button class="menu-item" data-section="informes">
+                <span class="menu-icon">📄</span>
+                <span>Informes Policiales</span>
+            </button>
+            <button class="menu-item" data-section="evidencias">
+                <span class="menu-icon">🔍</span>
+                <span>Registro Evidencias</span>
+            </button>
+            <button class="menu-item" data-section="alertas">
+                <span class="menu-icon">🚨</span>
+                <span>Órdenes y Alertas</span>
+            </button>
+            <button class="menu-item" data-section="mapa">
+                <span class="menu-icon">🗺️</span>
+                <span>Mapa Operativo</span>
+            </button>
+            <button class="menu-item" data-section="bandas">
+                <span class="menu-icon">👥</span>
+                <span>Bandas Criminales</span>
+            </button>
+            <button class="menu-item" data-section="agentes">
+                <span class="menu-icon">👮</span>
+                <span>Expediente Agentes</span>
+            </button>
+            <button class="menu-item" data-section="usuarios">
+                <span class="menu-icon">⚙️</span>
+                <span>Gestión Usuarios</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- CASOS POLICIALES -->
+    <div id="casosSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Casos Policiales</h2>
+        </div>
+        <button id="createCaseBtn" class="btn btn-primary" style="margin: 15px;">+ Crear Nuevo Caso</button>
+        <div id="casesList" class="list-container"></div>
+    </div>
+
+    <!-- CREATE/EDIT CASE -->
+    <div id="caseForm" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2 id="caseFormTitle">Crear Caso</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Nombre del Caso *</label>
+                    <input type="text" id="caseName" required>
+                </div>
+                <div class="field-group">
+                    <label>Descripción</label>
+                    <textarea id="caseDescription" rows="5"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Estado</label>
+                    <select id="caseStatus">
+                        <option value="Activo">Activo</option>
+                        <option value="Cerrado">Cerrado</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Fotos/Evidencias</label>
+                    <input type="file" id="casePhotos" multiple accept="image/*">
+                </div>
+                <button id="saveCaseBtn" class="btn btn-primary">Guardar Caso</button>
+                <button id="deleteCaseBtn" class="btn btn-danger" style="display: none;">Eliminar Caso</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECONOCIMIENTO FACIAL -->
+    <div id="reconocimientoFacialSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Reconocimiento Facial</h2>
+        </div>
+        <div class="camera-container">
+            <div class="camera-placeholder">
+                <span class="camera-icon">📷</span>
+                <p>Cámara</p>
+            </div>
+            <button id="scanFaceBtn" class="btn btn-primary">Escanear Rostro</button>
+            <div id="faceResult" class="scan-result"></div>
+        </div>
+    </div>
+
+    <!-- RECONOCIMIENTO MATRICULAS -->
+    <div id="reconocimientoMatriculasSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Reconocimiento de Matrículas</h2>
+        </div>
+        <div class="camera-container">
+            <div class="camera-placeholder">
+                <span class="camera-icon">🎥</span>
+                <p>Cámara</p>
+            </div>
+            <button id="scanPlateBtn" class="btn btn-primary">Escanear Matrícula</button>
+            <div id="plateResult" class="scan-result"></div>
+        </div>
+    </div>
+
+    <!-- DETENCIONES -->
+    <div id="detencionesSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Registro de Detenciones</h2>
+        </div>
+        <button id="createDetentionBtn" class="btn btn-primary" style="margin: 15px;">+ Nueva Detención</button>
+        <div id="detentionsList" class="list-container"></div>
+    </div>
+
+    <!-- DETENTION FORM -->
+    <div id="detentionForm" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Nueva Detención</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Ciudadano Detenido *</label>
+                    <input type="text" id="detentionCitizen" placeholder="Buscar por nombre o DNI">
+                    <div id="detentionCitizenResults" class="search-results"></div>
+                </div>
+                <div class="field-group">
+                    <label>Motivo de Detención *</label>
+                    <textarea id="detentionReason" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Lectura de Derechos</label>
+                    <textarea id="detentionRights" rows="4" readonly>Tiene derecho a guardar silencio. Todo lo que diga puede ser usado en su contra. Tiene derecho a un abogado. Si no puede pagar uno, se le asignará de oficio.</textarea>
+                </div>
+                <div class="field-group">
+                    <label>Tiempo en Custodia (horas)</label>
+                    <input type="number" id="detentionTime" value="24" min="1">
+                </div>
+                <div class="field-group">
+                    <label>Agentes Implicados</label>
+                    <input type="text" id="detentionAgents">
+                </div>
+                <button id="saveDetentionBtn" class="btn btn-primary">Registrar Detención</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MULTAS -->
+    <div id="multasSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Multas y Sanciones</h2>
+        </div>
+        <button id="createMultaBtn" class="btn btn-primary" style="margin: 15px;">+ Nueva Multa</button>
+        <div id="multasList" class="list-container"></div>
+    </div>
+
+    <!-- MULTA FORM -->
+    <div id="multaForm" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Nueva Multa</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Ciudadano *</label>
+                    <input type="text" id="multaCitizen" placeholder="Buscar por nombre o DNI">
+                    <div id="multaCitizenResults" class="search-results"></div>
+                </div>
+                <div class="field-group">
+                    <label>Vehículo (Opcional)</label>
+                    <input type="text" id="multaVehicle" placeholder="Matrícula">
+                </div>
+                <div class="field-group">
+                    <label>Tipo de Infracción *</label>
+                    <select id="multaType">
+                        <option value="">Seleccionar...</option>
+                        <option value="Exceso velocidad" data-amount="200">Exceso de velocidad</option>
+                        <option value="Estacionamiento prohibido" data-amount="100">Estacionamiento prohibido</option>
+                        <option value="Semáforo en rojo" data-amount="200">Saltarse semáforo en rojo</option>
+                        <option value="No respetar STOP" data-amount="150">No respetar señal STOP</option>
+                        <option value="Usar móvil conduciendo" data-amount="200">Usar móvil conduciendo</option>
+                        <option value="No llevar cinturón" data-amount="200">No llevar cinturón de seguridad</option>
+                        <option value="Conducción temeraria" data-amount="500">Conducción temeraria</option>
+                        <option value="Alcoholemia" data-amount="1000">Conducir bajo efectos del alcohol</option>
+                        <option value="Otra" data-amount="0">Otra</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Importe (€)</label>
+                    <input type="number" id="multaAmount" readonly>
+                </div>
+                <div class="field-group">
+                    <label>Descripción</label>
+                    <textarea id="multaDescription" rows="4"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Fecha</label>
+                    <input type="datetime-local" id="multaDate">
+                </div>
+                <div class="field-group">
+                    <label>Agente</label>
+                    <input type="text" id="multaAgent" readonly>
+                </div>
+                <button id="saveMultaBtn" class="btn btn-primary">Generar Denuncia</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INFORMES -->
+    <div id="informesSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Informes Policiales</h2>
+        </div>
+        <div class="menu-grid">
+            <button class="menu-item" data-report="intervencion">
+                <span class="menu-icon">📋</span>
+                <span>Informe de Intervención</span>
+            </button>
+            <button class="menu-item" data-report="patrulla">
+                <span class="menu-icon">🚔</span>
+                <span>Informe de Patrulla</span>
+            </button>
+            <button class="menu-item" data-report="incidente">
+                <span class="menu-icon">⚠️</span>
+                <span>Informe de Incidente</span>
+            </button>
+        </div>
+        <div id="reportsList" class="list-container" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- REPORT FORM -->
+    <div id="reportForm" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2 id="reportFormTitle">Nuevo Informe</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Fecha y Hora</label>
+                    <input type="datetime-local" id="reportDate">
+                </div>
+                <div class="field-group">
+                    <label>Ubicación</label>
+                    <input type="text" id="reportLocation">
+                </div>
+                <div class="field-group">
+                    <label>Descripción del Suceso *</label>
+                    <textarea id="reportDescription" rows="6"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Agentes Intervinientes</label>
+                    <input type="text" id="reportAgents">
+                </div>
+                <div class="field-group">
+                    <label>Personas Implicadas</label>
+                    <textarea id="reportPeople" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Observaciones</label>
+                    <textarea id="reportNotes" rows="3"></textarea>
+                </div>
+                <button id="saveReportBtn" class="btn btn-primary">Guardar Informe</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EVIDENCIAS -->
+    <div id="evidenciasSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Registro de Evidencias</h2>
+        </div>
+        <button id="createEvidenceBtn" class="btn btn-primary" style="margin: 15px;">+ Nueva Evidencia</button>
+        <div id="evidencesList" class="list-container"></div>
+    </div>
+
+    <!-- EVIDENCE FORM -->
+    <div id="evidenceForm" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Nueva Evidencia</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Caso Asociado *</label>
+                    <select id="evidenceCase">
+                        <option value="">Seleccionar caso...</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Tipo de Evidencia</label>
+                    <select id="evidenceType">
+                        <option value="Fotografía">Fotografía</option>
+                        <option value="Vídeo">Vídeo</option>
+                        <option value="Documento">Documento</option>
+                        <option value="Objeto">Objeto</option>
+                        <option value="Otra">Otra</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Descripción *</label>
+                    <textarea id="evidenceDescription" rows="4"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Archivo</label>
+                    <input type="file" id="evidenceFile" multiple>
+                </div>
+                <div class="field-group">
+                    <label>Cadena de Custodia</label>
+                    <textarea id="evidenceCustody" rows="3" placeholder="Agente recolector, fecha, lugar..."></textarea>
+                </div>
+                <button id="saveEvidenceBtn" class="btn btn-primary">Registrar Evidencia</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERTAS -->
+    <div id="alertasSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Órdenes y Alertas</h2>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="buscados">Personas Buscadas</button>
+            <button class="tab-btn" data-tab="ordenes">Órdenes de Arresto</button>
+            <button class="tab-btn" data-tab="desaparecidos">Desaparecidos</button>
+            <button class="tab-btn" data-tab="bolo">Alertas BOLO</button>
+        </div>
+        <div id="alertsContent" class="tab-content"></div>
+    </div>
+
+    <!-- MAPA OPERATIVO -->
+    <div id="mapaSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Mapa Operativo</h2>
+        </div>
+        <div class="map-container">
+            <div class="map-placeholder">
+                <span>🗺️</span>
+                <p>Mapa Interactivo</p>
+            </div>
+            <div class="map-legend">
+                <div class="legend-item"><span class="legend-dot red"></span> Incidentes Activos (3)</div>
+                <div class="legend-item"><span class="legend-dot blue"></span> Patrullas (8)</div>
+                <div class="legend-item"><span class="legend-dot yellow"></span> Hotspots (5)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BANDAS -->
+    <div id="bandasSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Bandas Criminales</h2>
+        </div>
+        <button id="createGangBtn" class="btn btn-primary" style="margin: 15px;">+ Nueva Banda</button>
+        <div id="gangsList" class="list-container"></div>
+    </div>
+
+    <!-- GANG FORM -->
+    <div id="gangForm" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Ficha de Banda</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Nombre de la Banda *</label>
+                    <input type="text" id="gangName">
+                </div>
+                <div class="field-group">
+                    <label>Actividades</label>
+                    <textarea id="gangActivities" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Miembros Conocidos</label>
+                    <textarea id="gangMembers" rows="4" placeholder="Nombres de miembros..."></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Relaciones con Otras Bandas</label>
+                    <textarea id="gangRelations" rows="3"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Nivel de Peligrosidad</label>
+                    <select id="gangDanger">
+                        <option value="Bajo">Bajo</option>
+                        <option value="Medio">Medio</option>
+                        <option value="Alto">Alto</option>
+                        <option value="Crítico">Crítico</option>
+                    </select>
+                </div>
+                <button id="saveGangBtn" class="btn btn-primary">Guardar Banda</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AGENTES -->
+    <div id="agentesSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Expediente de Agentes</h2>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="rangos">Rangos</button>
+            <button class="tab-btn" data-tab="sanciones">Sanciones</button>
+            <button class="tab-btn" data-tab="condecoraciones">Condecoraciones</button>
+            <button class="tab-btn" data-tab="historial">Historial</button>
+        </div>
+        <div id="agentesContent" class="tab-content"></div>
+    </div>
+
+    <!-- USUARIOS -->
+    <div id="usuariosSection" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Gestión de Usuarios</h2>
+        </div>
+        <button id="createUserBtn" class="btn btn-primary" style="margin: 15px;">+ Crear Usuario</button>
+        <div id="usersList" class="list-container"></div>
+    </div>
+
+    <!-- USER FORM -->
+    <div id="userForm" class="screen module-screen">
+        <div class="module-header">
+            <button class="btn-back">← Volver</button>
+            <h2>Crear Usuario</h2>
+        </div>
+        <div class="profile-container">
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label>Nombre de Usuario *</label>
+                    <input type="text" id="newUsername">
+                </div>
+                <div class="field-group">
+                    <label>Contraseña *</label>
+                    <input type="password" id="newUserPassword">
+                </div>
+                <div class="field-group">
+                    <label>Rango</label>
+                    <select id="newUserRank">
+                        <option value="Agente">Agente</option>
+                        <option value="Cabo">Cabo</option>
+                        <option value="Sargento">Sargento</option>
+                        <option value="Inspector">Inspector</option>
+                        <option value="Comisario">Comisario</option>
+                    </select>
+                </div>
+                <button id="saveUserBtn" class="btn btn-primary">Crear Usuario</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
