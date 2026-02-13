@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>SIPN · MDT Policía</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+        body { background:#0b1a2e; color:#e0e6ed; height:100vh; display:flex; justify-content:center; align-items:center; }
+        .screen { position:fixed; top:0; left:0; width:100%; height:100%; background:#0f1f2f; overflow-y:auto; padding:16px; }
+        .hidden { display:none !important; }
+        .app-header { display:flex; justify-content:space-between; align-items:center; background:#0a1a26; padding:12px 16px; border-bottom:2px solid #2d4a6e; border-radius:0 0 12px 12px; margin-bottom:20px; }
+        .app-header h2 { color:white; font-size:1.4rem; }
+        .btn-back, .btn-logout, .btn-settings { background:transparent; border:1px solid #4b7aa1; color:white; padding:8px 14px; border-radius:30px; cursor:pointer; }
+        #login-screen { display:flex; flex-direction:column; justify-content:center; align-items:center; background:linear-gradient(145deg,#0e1e2c,#09141e); }
+        .login-container { background:rgba(10,25,40,0.9); padding:30px 25px; border-radius:36px; width:90%; max-width:400px; border:1px solid #2f5777; text-align:center; }
+        .logo { width:100px; height:100px; background:#1f3a4f; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:3.5rem; font-weight:800; color:#b3e4ff; border:3px solid #568fc2; }
+        .login-container h1 { color:#b8e2ff; font-size:2.4rem; margin-bottom:20px; }
+        .input-group { margin-bottom:20px; text-align:left; }
+        .input-group label { display:block; font-size:0.8rem; color:#aad0f5; text-transform:uppercase; margin-bottom:5px; }
+        .input-group input { width:100%; padding:14px 18px; background:#162b39; border:1px solid #2b5f80; border-radius:40px; color:white; font-size:1rem; }
+        .btn-entrar { background:#0e5a8a; border:none; color:white; font-size:1.3rem; font-weight:bold; padding:14px 20px; width:100%; border-radius:60px; margin-top:20px; box-shadow:0 5px 0 #07344f; cursor:pointer; }
+        .btn-entrar:active { transform:translateY(3px); box-shadow:0 2px 0 #07344f; }
+        .hub-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:16px; margin-top:20px; }
+        .hub-card { background:white; color:#0a1a2c; border-radius:28px; padding:28px 8px; text-align:center; font-size:1.2rem; font-weight:700; box-shadow:0 10px 0 #a0b8cc; display:flex; align-items:center; justify-content:center; aspect-ratio:1/1; border:2px solid #dfebf5; cursor:pointer; }
+        .hub-card:active { transform:translateY(6px); box-shadow:0 4px 0 #7e9eb3; }
+        .search-box { width:100%; padding:12px 18px; background:#132a36; border:1px solid #2d6b8f; border-radius:50px; color:white; margin-bottom:20px; }
+        .list-item { background:#112531; padding:14px 18px; margin-bottom:8px; border-radius:18px; display:flex; justify-content:space-between; align-items:center; border-left:6px solid #2d8fc5; }
+        .list-item button { background:white; border:none; color:#0c1e2b; font-weight:600; padding:10px 18px; border-radius:40px; cursor:pointer; }
+        .btn-save { background:#1c6a9f; border:none; color:white; padding:16px; border-radius:60px; font-size:1.2rem; font-weight:bold; width:100%; margin:20px 0; cursor:pointer; }
+        .full-form input, .full-form textarea { width:100%; padding:14px; margin-bottom:12px; background:#1c3341; border:1px solid #2a6c8a; border-radius:16px; color:white; }
+        .camera-mock { background:#162b36; padding:35px; text-align:center; border-radius:30px; border:3px dashed #438bb7; margin:20px 0; }
+        @media (max-width:480px) { .hub-card { font-size:1rem; padding:20px 4px; } }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="login-screen" class="screen">
+        <div class="login-container">
+            <div class="logo">SIPN</div>
+            <h1>SIPN</h1>
+            <div class="input-group">
+                <label>Usuario</label>
+                <input type="text" id="usuario" value="Pol Beltran">
+            </div>
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" value="Polbeltran5">
+            </div>
+            <button class="btn-entrar" id="btn-login">Entrar</button>
+            <div style="color:#8ab3cf; margin-top:20px;">Acceso restringido · MDT</div>
+        </div>
+    </div>
+    <!-- HUB -->
+    <div id="hub-screen" class="screen hidden">
+        <div class="app-header">
+            <button class="btn-back" id="backBtn" style="visibility:visible;">← Volver</button>
+            <h2 id="header-title">MDT · HUB</h2>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-settings" id="settingsBtn">⚙️ Ajustes</button>
+                <button class="btn-logout" id="logoutBtn">🚪 Salir</button>
+            </div>
+        </div>
+        <div id="app-content"></div>
+    </div>
+    <script>
+        (function(){
+            "use strict";
+            const KEYS = {
+                CITIZENS: 'mdt_citizens', VEHICLES: 'mdt_vehicles', CASES: 'mdt_cases',
+                USERS: 'mdt_users', LOGGED_IN: 'mdt_loggedIn'
+            };
+            const load = (k,d)=> { try { return JSON.parse(localStorage.getItem(k))||d; } catch { return d; } };
+            const save = (k,v)=> localStorage.setItem(k, JSON.stringify(v));
+
+            // Usuario por defecto
+            if(!load(KEYS.USERS,[]).length) save(KEYS.USERS, [{id:1, username:'Pol Beltran', password:'Polbeltran5', rank:'Oficial'}]);
+
+            // 200 ciudadanos aleatorios
+            if(!localStorage.getItem(KEYS.CITIZENS)) {
+                let c = [];
+                for(let i=0;i<200;i++) c.push({
+                    id:'c'+i+Date.now(), nombre:'Ciudadano '+i, dni: Math.floor(Math.random()*100000000)+'X',
+                    telefono:'6'+Math.floor(Math.random()*100000000), direccion:'C/ '+i, nacionalidad:'Española',
+                    trabajo:'Oficio', antecedentes:Math.random()>0.7, antecedentesDesc:'Hurto',
+                    buscaCaptura:Math.random()>0.9, vehiculoAsignado:null
+                });
+                save(KEYS.CITIZENS, c);
+            }
+            // 200 vehículos aleatorios
+            if(!localStorage.getItem(KEYS.VEHICLES)) {
+                let v = [];
+                for(let i=0;i<200;i++) v.push({
+                    id:'v'+i+Date.now(), marca:'Seat', modelo:'Ibiza', matricula: Math.floor(Math.random()*10000)+'XYZ',
+                    color:'Blanco', bastidor:'VIN'+i, itv:'2025-05-01', ubicacion:'Poligono',
+                    robado:Math.random()>0.8, alertaRobo:'Vehículo alertado', propietarioId:null
+                });
+                save(KEYS.VEHICLES, v);
+            }
+            if(!localStorage.getItem(KEYS.CASES)) save(KEYS.CASES, []);
+
+            const login = document.getElementById('login-screen');
+            const hub = document.getElementById('hub-screen');
+            const content = document.getElementById('app-content');
+            const header = document.getElementById('header-title');
+            const back = document.getElementById('backBtn');
+            let stack = ['hub'];
+
+            function check() {
+                if(localStorage.getItem(KEYS.LOGGED_IN)==='true') { login.classList.add('hidden'); hub.classList.remove('hidden'); render('hub'); }
+                else { login.classList.remove('hidden'); hub.classList.add('hidden'); }
+            }
+
+            document.getElementById('btn-login').onclick = (e)=>{
+                e.preventDefault();
+                let u = document.getElementById('usuario').value.trim();
+                let p = document.getElementById('password').value.trim();
+                if(load(KEYS.USERS,[]).some(us=> us.username===u && us.password===p)) {
+                    localStorage.setItem(KEYS.LOGGED_IN,'true'); check();
+                } else alert('Credenciales incorrectas');
+            };
+            document.getElementById('logoutBtn').onclick = ()=>{ localStorage.setItem(KEYS.LOGGED_IN,'false'); check(); };
+            back.onclick = ()=>{ if(stack.length>1) { stack.pop(); render(stack[stack.length-1]); } else render('hub'); };
+            document.getElementById('settingsBtn').onclick = ()=> render('userManagement');
+
+            function render(p) {
+                if(!hub.classList.contains('hidden')) {
+                    stack.push(p);
+                    header.innerText = p==='hub'? 'HUB CENTRAL' : p;
+                    back.style.visibility = p==='hub'? 'hidden' : 'visible';
+                    let html = '';
+                    if(p==='hub') html = '<div class="hub-grid"><div class="hub-card" data-page="citizens">👥 CIUDADANOS</div><div class="hub-card" data-page="vehicles">🚘 VEHÍCULOS</div><div class="hub-card" data-page="system">📋 SISTEMA POLICIAL</div><div class="hub-card" data-page="createCitizen">➕ CREAR CIUDADANO</div></div>';
+                    if(p==='citizens') {
+                        let list = load(KEYS.CITIZENS,[]);
+                        html = '<input class="search-box" placeholder="🔍 Buscar nombre/DNI/teléfono">';
+                        list.forEach(c => html += '<div class="list-item"><span><strong>'+c.nombre+'</strong><br><small>'+c.dni+'</small></span><button data-id="'+c.id+'" class="btn-view-citizen">VER</button></div>');
+                    }
+                    if(p==='vehicles') {
+                        let list = load(KEYS.VEHICLES,[]);
+                        html = '<input class="search-box" placeholder="🔍 Buscar matrícula/marca/modelo">';
+                        list.forEach(v => html += '<div class="list-item"><span><strong>'+v.marca+' '+v.modelo+'</strong><br><small>'+v.matricula+'</small></span><button data-id="'+v.id+'" class="btn-view-vehicle">VER</button></div>');
+                    }
+                    if(p==='createCitizen') html = '<div class="full-form"><h3>➕ Nuevo ciudadano</h3><input placeholder="Nombre completo"><input placeholder="DNI"><input placeholder="Teléfono"><input placeholder="Dirección"><input placeholder="Nacionalidad" value="Española"><input placeholder="Trabajo"><div style="display:flex; gap:10px;"><label>Antecedentes:</label><input type="checkbox"></div><textarea placeholder="Descripción antecedentes"></textarea><div style="display:flex; gap:10px;"><label>Busca y captura:</label><input type="checkbox"></div><button class="btn-save">GUARDAR CIUDADANO</button></div>';
+                    if(p==='system') html = '<div style="display:flex; flex-direction:column; gap:16px;"><div class="list-item" data-page="facial">😐 RECONOCIMIENTO FACIAL <button>></button></div><div class="list-item" data-page="plate">🪪 RECONOCIMIENTO MATRÍCULAS <button>></button></div><div class="list-item" data-page="cases">📁 CASOS POLICIALES <button>></button></div><div class="list-item" data-page="detenciones">🚔 REGISTRO DETENCIONES <button>></button></div><div class="list-item" data-page="multas">📝 MULTAS Y SANCIONES <button>></button></div></div>';
+                    if(p==='facial') html = '<div class="camera-mock">📷 CÁMARA FACIAL (SIMULACIÓN)<br><button id="simularFacial" class="btn-save">IDENTIFICAR PERSONA</button><div id="facialResult"></div></div>';
+                    if(p==='plate') html = '<div class="camera-mock">📸 LECTOR MATRÍCULAS<br><button id="simularPlaca" class="btn-save">CAPTURAR MATRÍCULA</button><div id="plateResult"></div></div>';
+                    if(p==='userManagement') {
+                        let users = load(KEYS.USERS,[]);
+                        html = '<h3>👮 Gestión de usuarios</h3><div class="full-form"><input id="newUsername" placeholder="Usuario"><input id="newPassword" placeholder="Contraseña"><input id="newRank" placeholder="Rango"><button id="crearUsuarioBtn" class="btn-save">CREAR USUARIO</button></div><hr>';
+                        users.forEach(u => html += '<div class="list-item">'+u.username+' · '+(u.rank||'Oficial')+'</div>');
+                    }
+                    if(p==='cases') html = '<button class="btn-save" id="nuevoCasoBtn">+ CREAR CASO</button><div class="list-item">Caso 1 · Activo</div>';
+                    if(p==='detenciones') html = '<h3>Registro detenciones</h3><div class="full-form"><input placeholder="Motivo"><textarea placeholder="Lectura de derechos automática"></textarea><input placeholder="Tiempo custodia (min)"><button class="btn-save">REGISTRAR DETENCIÓN</button></div>';
+                    if(p==='multas') html = '<h3>Generar multa</h3><div class="full-form"><input placeholder="Ciudadano (DNI o nombre)"><input placeholder="Vehículo matrícula"><select><option>Exceso velocidad</option><option>Semáforo</option></select><input placeholder="Importe automático" value="150€"><button class="btn-save">GENERAR DENUNCIA</button></div>';
+
+                    content.innerHTML = html;
+
+                    if(p==='hub') document.querySelectorAll('.hub-card').forEach(el=> el.onclick = ()=> render(el.dataset.page));
+                    if(p==='citizens') document.querySelectorAll('.btn-view-citizen').forEach(b=> b.onclick = ()=> alert('🔍 Perfil de ciudadano (simulado)'));
+                    if(p==='vehicles') document.querySelectorAll('.btn-view-vehicle').forEach(b=> b.onclick = ()=> alert('🔍 Ficha de vehículo (simulado)'));
+                    if(p==='system') document.querySelectorAll('.list-item[data-page]').forEach(el=> el.onclick = ()=> render(el.dataset.page));
+                    if(p==='facial') document.getElementById('simularFacial')?.addEventListener('click', function(){
+                        let c = load(KEYS.CITIZENS,[]);
+                        let r = c[Math.floor(Math.random()*c.length)];
+                        document.getElementById('facialResult').innerHTML = '✅ Match: '+r.nombre+' <button data-id="'+r.id+'" class="btn-view-citizen">VER PERFIL</button>';
+                        document.querySelector('#facialResult .btn-view-citizen')?.addEventListener('click', ()=> alert('Perfil: '+r.nombre));
+                    });
+                    if(p==='plate') document.getElementById('simularPlaca')?.addEventListener('click', function(){
+                        let v = load(KEYS.VEHICLES,[]);
+                        let r = v[Math.floor(Math.random()*v.length)];
+                        document.getElementById('plateResult').innerHTML = '✅ Matrícula: '+r.matricula+' · '+r.marca+' '+r.modelo+' <button data-id="'+r.id+'" class="btn-view-vehicle">VER VEHÍCULO</button>';
+                        document.querySelector('#plateResult .btn-view-vehicle')?.addEventListener('click', ()=> alert('Vehículo: '+r.matricula));
+                    });
+                    if(p==='userManagement') document.getElementById('crearUsuarioBtn')?.addEventListener('click', function(){
+                        let u = load(KEYS.USERS,[]);
+                        u.push({ id: Date.now(), username: document.getElementById('newUsername').value, password: document.getElementById('newPassword').value, rank: document.getElementById('newRank').value });
+                        save(KEYS.USERS, u);
+                        alert('✅ Usuario creado');
+                        render('userManagement');
+                    });
+                }
+            }
+            check();
+        })();
+    </script>
+</body>
+</html>
