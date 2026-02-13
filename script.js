@@ -1,3 +1,12 @@
+// IMMEDIATE EXECUTION TEST - This runs as soon as the script loads
+(function() {
+    const jsStatusDiv = document.getElementById('jsStatus');
+    if (jsStatusDiv) {
+        jsStatusDiv.style.background = 'rgba(76, 175, 80, 0.8)';
+        jsStatusDiv.innerHTML = '✅ JS cargado';
+    }
+})();
+
 // STATE MANAGEMENT
 let currentUser = null;
 let currentScreen = 'loginScreen';
@@ -542,28 +551,71 @@ function loadUsers() {
 // INITIALIZE WHEN DOM IS READY
 document.addEventListener('DOMContentLoaded', function() {
     const debugDiv = document.getElementById('debugInfo');
+    const jsStatus = document.getElementById('jsStatus');
+    
+    if (jsStatus) {
+        jsStatus.innerHTML = '✅ DOM Ready';
+    }
+    
     if (debugDiv) {
         debugDiv.style.display = 'block';
         debugDiv.innerHTML = '⏳ Cargando aplicación...<br>';
     }
     
-    initializeData();
-    
-    if (debugDiv) {
-        debugDiv.innerHTML += '✅ Datos inicializados<br>';
+    try {
+        initializeData();
+        
+        if (debugDiv) {
+            debugDiv.innerHTML += '✅ Datos inicializados<br>';
+        }
+    } catch (error) {
+        if (debugDiv) {
+            debugDiv.innerHTML += '❌ Error inicializando: ' + error.message + '<br>';
+        }
     }
     
-    // LOGIN
-    document.getElementById('loginButton').addEventListener('click', login);
-    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') login();
-    });
+    // LOGIN - Try to get the button
+    const loginBtn = document.getElementById('loginButton');
+    const loginPassword = document.getElementById('loginPassword');
     
     if (debugDiv) {
-        debugDiv.innerHTML += '✅ Botón de login listo<br>';
-        setTimeout(() => {
-            debugDiv.innerHTML += '👉 Puedes hacer login ahora<br>';
-        }, 500);
+        debugDiv.innerHTML += '🔍 Buscando botón login...<br>';
+        if (loginBtn) {
+            debugDiv.innerHTML += '✅ Botón encontrado<br>';
+        } else {
+            debugDiv.innerHTML += '❌ Botón NO encontrado<br>';
+        }
+    }
+    
+    if (loginBtn) {
+        loginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (debugDiv) {
+                debugDiv.innerHTML += '🖱️ Click detectado!<br>';
+            }
+            login();
+        });
+        
+        if (debugDiv) {
+            debugDiv.innerHTML += '✅ Listener añadido al botón<br>';
+        }
+    }
+    
+    if (loginPassword) {
+        loginPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                login();
+            }
+        });
+    }
+    
+    if (debugDiv) {
+        debugDiv.innerHTML += '👉 Sistema listo para login<br>';
+    }
+    
+    if (jsStatus) {
+        jsStatus.innerHTML = '✅ App lista';
     }
     
     // LOGOUT
