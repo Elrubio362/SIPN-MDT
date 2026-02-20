@@ -1,0 +1,50 @@
+body {
+margin:0;
+font-family:Arial, sans-serif;
+background:#0f172a;
+color:white;
+}
+header {
+background:#1e293b;
+padding:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+nav button {
+margin:0 5px;
+padding:8px 12px;
+background:#2563eb;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+.module {
+display:none;
+padding:20px;
+}
+.module.active {
+display:block;
+}
+textarea,input,select {
+display:block;
+margin:10px 0;
+padding:8px;
+width:100%;
+max-width:400px;
+border-radius:6px;
+border:none;
+}
+button {
+background:#3b82f6;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+#map {
+height:400px;
+margin-top:20px;
+}

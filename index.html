@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIPN MDT</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<header>
+<h1>SIPN MDT</h1>
+<nav>
+<button onclick="showSection('informes')">Informes</button>
+<button onclick="showSection('evidencias')">Evidencias</button>
+<button onclick="showSection('alertas')">Alertas</button>
+<button onclick="showSection('ciudadano')">Ciudadano</button>
+<button onclick="showSection('mapa')">Mapa</button>
+</nav>
+</header>
+
+<section id="informes" class="module active">
+<h2>Informes Policiales</h2>
+<textarea id="nuevoInforme" placeholder="Escribe un informe..."></textarea>
+<button onclick="guardarInforme()">Guardar</button>
+<div id="listaInformes"></div>
+</section>
+
+<section id="evidencias" class="module">
+<h2>Registro de Evidencias</h2>
+<input type="file" id="archivo">
+<input type="text" id="descripcionEvidencia" placeholder="Descripción">
+<button onclick="guardarEvidencia()">Registrar</button>
+<div id="listaEvidencias"></div>
+</section>
+
+<section id="alertas" class="module">
+<h2>Órdenes y Alertas</h2>
+<input type="text" id="descripcionAlerta" placeholder="Descripción alerta">
+<select id="prioridad">
+<option value="Alta">Alta</option>
+<option value="Media">Media</option>
+<option value="Baja">Baja</option>
+</select>
+<button onclick="guardarAlerta()">Crear</button>
+<div id="listaAlertas"></div>
+</section>
+
+<section id="ciudadano" class="module">
+<h2>Ficha Ciudadano</h2>
+<input type="text" id="nombreCiudadano" placeholder="Nombre completo">
+<input type="text" id="dniCiudadano" placeholder="DNI">
+<button onclick="guardarCiudadano()">Guardar ficha</button>
+<div id="fichaGuardada"></div>
+</section>
+
+<section id="mapa" class="module">
+<h2>Mapa Operativo</h2>
+<div id="map"></div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
